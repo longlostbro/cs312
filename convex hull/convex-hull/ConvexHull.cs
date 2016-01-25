@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Windows;
 
 namespace _1_convex_hull
 {
@@ -36,18 +37,42 @@ namespace _1_convex_hull
         {
             return node.Next ?? node.List.First;
         }
+        private LinkedListNode<PointF> prev(LinkedListNode<PointF> node)
+        {
+            return node.Previous ?? node.List.Last;
+        }
 
-        private ConvexHull merge(ConvexHull second)
+        public ConvexHull merge(ConvexHull second)
         {
             this.current = this.right;
             second.current = second.left;
-            findNextSuccessful();
+            bool check1 = false;
+            bool check2 = false;
+            while (check1 || check2) //while atleast 1 of them has changed
+            {
+                check1 = findNextSuccessful(this, second);
+                check2 = findNextSuccessful(second, this);
+            }
             return new ConvexHull(new List<PointF>());
         }
 
-        private void findNextSuccessful()
+        private bool findNextSuccessful(ConvexHull pivot, ConvexHull temp)
         {
-            throw new NotImplementedException();
+            LinkedListNode<PointF> initial = temp.current;
+            while (isValidHullPoint(pivot.current,temp.current))
+            {
+                temp.current = next(temp.current);
+            }
+            temp.current = prev(temp.current);
+            return initial != temp.current;
+        }
+
+        private bool isValidHullPoint(LinkedListNode<PointF> pivot, LinkedListNode<PointF> temp)
+        {
+            Vector pivotVector = new Vector(pivot.Value.X, pivot.Value.Y);
+            Vector tempVector = new Vector(temp.Value.X, temp.Value.Y);
+            double result = Vector.CrossProduct(pivotVector, tempVector);
+            return result > 0;
         }
     }
 }
