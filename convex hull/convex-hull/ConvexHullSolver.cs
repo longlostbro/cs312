@@ -10,12 +10,14 @@ namespace _2_convex_hull
 {
     class ConvexHullSolver
     {
-        System.Drawing.Graphics g;
-        System.Windows.Forms.PictureBox pictureBoxView;
+        public System.Drawing.Graphics graphic;
+        private System.Windows.Forms.PictureBox pictureBoxView;
+        public static ConvexHullSolver _instance;
 
         public ConvexHullSolver(System.Drawing.Graphics g, System.Windows.Forms.PictureBox pictureBoxView)
         {
-            this.g = g;
+            _instance = this;
+            this.graphic = g;
             this.pictureBoxView = pictureBoxView;
         }
 
