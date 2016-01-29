@@ -44,3 +44,5 @@ C:\Users\dtaylor\Source\Repos\School\cs312\convex hull\convex-hull\obj\Debug\con
 C:\Users\dtaylor\Source\Repos\School\cs312\convex hull\convex-hull\obj\Debug\_2_convex_hull.FormMain.resources
 C:\Users\dtaylor\Source\Repos\School\cs312\convex hull\convex-hull\obj\Debug\_1_convex_hull.Properties.Resources.resources
 C:\Users\dtaylor\Source\Repos\School\cs312\convex hull\convex-hull\obj\Debug\convex-hull.csproj.GenerateResource.Cache
+C:\Users\longl\Documents\Repos\School\cs312\convex hull\convex-hull\obj\Debug\01-convex-hull.exe
+C:\Users\longl\Documents\Repos\School\cs312\convex hull\convex-hull\obj\Debug\01-convex-hull.pdb
