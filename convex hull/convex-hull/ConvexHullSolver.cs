@@ -38,7 +38,9 @@ namespace _2_convex_hull
         {
             pointList.Sort(new PointFComparer());
             List<PointF> sortedPoints = new List<PointF>(pointList);
-            generateHull(sortedPoints);
+            ConvexHull hull = generateHull(sortedPoints);
+            graphic.Clear(Color.White);
+            hull.drawHull();
         }
 
         private ConvexHull generateHull(List<PointF> sortedPoints)
@@ -64,10 +66,11 @@ namespace _2_convex_hull
             points.ForEach(o => str.Append(o + ","));
             return str.ToString().Substring(0, str.Length - 2);
         }
+
     }
 
 
-    class PointFComparer : IComparer<PointF>
+    public class PointFComparer : IComparer<PointF>
     {
 
         public int Compare(PointF first, PointF second)
