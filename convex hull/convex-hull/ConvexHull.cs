@@ -10,14 +10,14 @@ namespace _1_convex_hull
 {
     class ConvexHull
     {
-        LinkedList<PointF> points;
-        LinkedListNode<PointF> current;
-        LinkedListNode<PointF> left;
-        LinkedListNode<PointF> right;
+        List<PointF> points;
+        int current = -1;
+        int left = 0;
+        int right = -1;
         int pauseTime = 500;
         ConvexHull neighbor;
 
-        public LinkedListNode<PointF> Current
+        public int Current
         {
             get
             {
@@ -36,115 +36,74 @@ namespace _1_convex_hull
 
         public ConvexHull(List<PointF> pointList)
         {
-            if(pointList.Count > 2)
-                orderPointsClockwise(pointList);
-            else if(pointList.Count == 0)
-            {
-                MessageBox.Show("EMPTY HULL");
-            }
-            else
-            {
-                points = new LinkedList<PointF>(pointList);
-                this.left = points.First;
-                this.right = points.Last;
-            }
+            PointF right = pointList.Last();
+            pointList.Sort(new Utils.PointFComparerBySlope(pointList.First()));
+            points = new List<PointF>(pointList);
+            this.right = points.IndexOf(right);
         }
 
-        private void setPoints(LinkedList<PointF> points)
+        public ConvexHull(List<PointF> pointList, int right)
         {
-            this.points = points;
-        }
-
-        public ConvexHull(LinkedList<PointF> pointList, PointF value)
-        {
-            setPoints(pointList);
-            setLeft(pointList.First);
-            setRight(value);
-        }
-
-        private void setRight(PointF point)
-        {
-            this.right = points.Find(point);
-            if(this.right == null)
-            {
-                MessageBox.Show("Can't find right point of hull");
-            }
-        }
-
-        private void setLeft(LinkedListNode<PointF> point)
-        {
-            this.left = point;
-            if (this.left == null)
-            {
-                MessageBox.Show("Left point of hull is null");
-            }
-        }
-
-        private void orderPointsClockwise(List<PointF> pointList)
-        {
-            SortedDictionary<float, PointF> sortedPoints= new SortedDictionary<float, PointF>();
-            foreach(PointF point in pointList.Skip(1))
-            {
-                float slope = ((point.Y - pointList[0].Y) / (point.X - pointList[0].X));
-                sortedPoints.Add(slope, point);
-            }
-            sortedPoints.Reverse();
-            points = new LinkedList<PointF>(sortedPoints.Values);
-            points.AddFirst(pointList[0]);
-            this.left = points.First;
-            if (this.left == null)
-            {
-                points.Find(pointList.Last());
-            }
-            this.right = points.Find(pointList.Last());
-            if(this.right == null)
-            {
-                points.Find(pointList.Last());
-            }
-        }
-
-        private LinkedListNode<PointF> next(LinkedListNode<PointF> node)
-        {
-            return node.Next ?? node.List.First;
-        }
-        private LinkedListNode<PointF> prev(LinkedListNode<PointF> node)
-        {
-            return node.Previous ?? node.List.Last;
+            points = pointList;
+            this.right = right;
         }
 
         public ConvexHull merge(ConvexHull second)
         {
-            LinkedListNode<PointF> topRight = null;
-            LinkedListNode<PointF> topLeft = null;
-            LinkedListNode<PointF> bottomRight = null;
-            LinkedListNode<PointF> bottomLeft = null;
+            int topRight = -1;
+            int topLeft = -1;
+            int bottomRight = -1;
+            int bottomLeft = -1;
             neighbor = second;
             //RESET CURRENT
             this.Current = this.right;
             second.Current = second.left;
             bool changed = true;
+            drawAll();
+            refreshGraphics();
             while(changed)
             {
                 topRight = findTopRight(this.current, second.current);
-                if (topRight.Value.Equals(second.current.Value))
+                if (second.points[topRight].Equals(second.points[second.current]))
                 {
                     changed = false;
                 }
                 else
                 {
-                    second.points.Remove(this.current.Value);
+                    if (second.right > second.current)
+                    {
+                        second.right--;
+                    }
+                    if (topRight > this.current)
+                    {
+                        topRight--;
+                    }
+                    second.points.Remove(second.points[second.current]);//TODO
                     second.Current = topRight;
                 }
+                drawAll();
+                refreshGraphics();
                 topLeft = findTopLeft(this.current, second.current);
-                if (topRight.Value.Equals(this.current.Value))
+                if (points[topLeft].Equals(points[this.current]))
                 {
                     changed = false;
                 }
                 else
                 {
-                    this.points.Remove(this.current.Value);
+                    changed = true;
+                    if (this.right > this.current)
+                    {
+                        this.right--;
+                    }
+                    if (topLeft> this.current)
+                    {
+                        topLeft--;
+                    }
+                    this.points.Remove(points[this.current]);//TODO
                     this.Current = topLeft;
                 }
+                drawAll();
+                refreshGraphics();
             }
 
             //RESET CURRENT
@@ -154,41 +113,54 @@ namespace _1_convex_hull
             while (changed)
             {
                 bottomRight = findBottomRight(this.current, second.current);
-                if (bottomRight.Value.Equals(second.current.Value))
+                if (second.points[bottomRight].Equals(second.points[second.current]))
                 {
                     changed = false;
                 }
                 else
                 {
-                    second.points.Remove(second.current.Value);
+                    if (second.right > second.current)
+                    {
+                        second.right--;
+                    }
+                    if (bottomRight > second.current)
+                    {
+                        bottomRight--;
+                    }
+                    second.points.Remove(second.points[second.current]);//TODO
                     second.Current = bottomRight;
                 }
                 bottomLeft = findBottomLeft(this.current, second.current);
-                if (bottomLeft.Value.Equals(this.current.Value))
+                if (this.points[bottomLeft].Equals(this.points[this.current]))
                 {
                     changed = false;
                 }
                 else
                 {
-                    this.points.Remove(this.current.Value);
+                    if (this.right > this.current)
+                    {
+                        this.right--;
+                    }
+                    if (bottomLeft > second.current)
+                    {
+                        bottomLeft--;
+                    }
+                    this.points.Remove(points[this.current]);//TODO
                     this.Current = bottomLeft;
                 }
             }
 
             //find values
+            PointF right = second.points[second.right];
             for (int i = 0; i < second.points.Count; i++)
             {
-                this.points.AddAfter(this.current, next(second.current).Value);
+                this.points.Insert(topLeft + 1, second.points[i]);
+                    //  .AddAfter(this.current, next(second.current).Value);
             }
-            return new ConvexHull(this.points.ToList());
+            return new ConvexHull(this.points,this.points.IndexOf(right));
         }
 
-        private float getSlope(LinkedListNode<PointF> left, LinkedListNode<PointF> right)
-        {
-            PointF a = left.Value;
-            PointF b = right.Value;
-            return (b.Y - a.Y) / (b.X - b.Y);
-        }
+        
 
 
         private void clearGraphics()
@@ -210,8 +182,8 @@ namespace _1_convex_hull
         {
             if (points != null && points.Count > 0)
             {
-                LinkedList<PointF> tempPoints = new LinkedList<PointF>(points);
-                tempPoints.AddLast(points.First.Value);
+                List<PointF> tempPoints = new List<PointF>(points);
+                tempPoints.Add(points.First());
                 ConvexHullSolver._instance.graphic.DrawLines(new Pen(Brushes.Blue), tempPoints.ToArray());
                 labelPoints();
             }
@@ -219,9 +191,9 @@ namespace _1_convex_hull
 
         private void drawCurrentToCurrent()
         {
-            if (neighbor != null && neighbor.current != null)
+            if (neighbor != null && neighbor.current != -1)
             {
-                ConvexHullSolver._instance.graphic.DrawLine(new Pen(Brushes.Red), this.current.Value, neighbor.current.Value);
+                ConvexHullSolver._instance.graphic.DrawLine(new Pen(Brushes.Red), points[this.current], neighbor.points[neighbor.current]);
             }
         }
 
@@ -229,8 +201,8 @@ namespace _1_convex_hull
         {
             if (neighbor != null && neighbor.points != null)
             {
-                LinkedList<PointF> tempPoints2 = new LinkedList<PointF>(neighbor.points);
-                tempPoints2.AddLast(neighbor.points.First.Value);
+                List<PointF> tempPoints2 = new List<PointF>(neighbor.points);
+                tempPoints2.Add(neighbor.points.First());
                 ConvexHullSolver._instance.graphic.DrawLines(new Pen(Brushes.Blue), tempPoints2.ToArray());
             }
         }
@@ -267,42 +239,63 @@ namespace _1_convex_hull
             //    ConvexHullSolver._instance.graphic.DrawLine(new Pen(Brushes.Orange), bottomLeft.Value, bottomright.Value);
         }
 
-        private LinkedListNode<PointF> findTopRight(LinkedListNode<PointF> left, LinkedListNode<PointF> right)
+        private int findTopRight(int left, int right)
         {
-            LinkedListNode<PointF> temp = right;
-            while(getSlope(left,next(temp)) > getSlope(left, temp))
+            while(Utils.calculateSlope(this.points[left],next(neighbor.points,right)) > Utils.calculateSlope(this.points[left], neighbor.points[right]))
             {
-                temp = next(temp);
+                right = nextInt(neighbor.points, right);
             }
-            return temp;
+            return right;
         }
-        private LinkedListNode<PointF> findBottomRight(LinkedListNode<PointF> left, LinkedListNode<PointF> right)
+        private int findBottomRight(int left, int right)
         {
-            LinkedListNode<PointF> temp = right;
-            while (getSlope(left, prev(temp)) < getSlope(left, temp))
+            while (Utils.calculateSlope(this.points[left], prev(neighbor.points,right)) < Utils.calculateSlope(points[left], neighbor.points[right]))
             {
-                temp = prev(temp);
+                right = prevInt(neighbor.points,right);
             }
-            return temp;
+            return right;
         }
-        private LinkedListNode<PointF> findTopLeft(LinkedListNode<PointF> left, LinkedListNode<PointF> right)
+        private int findTopLeft(int left, int right)
         {
-            LinkedListNode<PointF> temp = left;
-            while (getSlope(prev(temp), right) < getSlope(temp, right))
+            while (Utils.calculateSlope(prev(this.points,left), neighbor.points[right]) < Utils.calculateSlope(points[left], neighbor.points[right]))
             {
-                temp = prev(temp);
+                left = prevInt(this.points,left);
             }
-            return temp;
+            return left;
         }
-        private LinkedListNode<PointF> findBottomLeft(LinkedListNode<PointF> left, LinkedListNode<PointF> right)
+        private int findBottomLeft(int left, int right)
         {
-            LinkedListNode<PointF> temp = left;
-            while (getSlope(next(temp), right) > getSlope(temp, right))
+            while (Utils.calculateSlope(next(this.points,left), neighbor.points[right]) > Utils.calculateSlope(points[left], neighbor.points[right]))
             {
-                temp = next(temp);
+                left = nextInt(this.points,left);
             }
-            return temp;
+            return left;
         }
 
+        private PointF prev(List<PointF> points, int pos)
+        {
+            if (pos == 0)
+                return points[points.Count-1];
+            return points[pos-1];
+        }
+        private int prevInt(List<PointF> points, int pos)
+        {
+            if (pos == 0)
+                return points.Count - 1;
+            return pos - 1;
+        }
+
+        private PointF next(List<PointF> points, int pos)
+        {
+            if (pos == points.Count - 1)
+                return points[0];
+            return points[pos+1];
+        }
+        private int nextInt(List<PointF> points, int pos)
+        {
+            if (pos == points.Count - 1)
+                return 0;
+            return pos + 1;
+        }
     }
 }

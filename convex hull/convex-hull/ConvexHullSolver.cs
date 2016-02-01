@@ -36,7 +36,7 @@ namespace _2_convex_hull
 
         public void Solve(List<System.Drawing.PointF> pointList)
         {
-            pointList.Sort(new PointFComparer());
+            pointList.Sort(new Utils.PointFComparerByX());
             List<PointF> sortedPoints = new List<PointF>(pointList);
             ConvexHull hull = generateHull(sortedPoints);
             graphic.Clear(Color.White);
@@ -70,24 +70,6 @@ namespace _2_convex_hull
     }
 
 
-    public class PointFComparer : IComparer<PointF>
-    {
-
-        public int Compare(PointF first, PointF second)
-        {
-            return (int)(first.X - second.X);
-        }
-    }
+    
 }
-//public int Compare(PointF first, PointF second)
-//{
-//    if (first.X == second.X)
-//    {
-//        return (int)(first.Y - second.Y);
-//    }
-//    else
-//    {
-//        return (int)(first.X - second.X);
-//    }
 
-//}
