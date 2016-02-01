@@ -14,10 +14,6 @@ namespace _1_convex_hull
         LinkedListNode<PointF> current;
         LinkedListNode<PointF> left;
         LinkedListNode<PointF> right;
-        LinkedListNode<PointF> topLeft;
-        LinkedListNode<PointF> topright;
-        LinkedListNode<PointF> bottomLeft;
-        LinkedListNode<PointF> bottomright;
         int pauseTime = 500;
         ConvexHull neighbor;
 
@@ -31,74 +27,6 @@ namespace _1_convex_hull
             set
             {
                 current = value;
-                clearGraphics();
-                drawAll();
-                refreshGraphics();
-                pause(pauseTime);
-            }
-        }
-
-        public LinkedListNode<PointF> TopLeft
-        {
-            get
-            {
-                return topLeft;
-            }
-
-            set
-            {
-                topLeft = value;
-                clearGraphics();
-                drawAll();
-                refreshGraphics();
-                pause(pauseTime);
-            }
-        }
-
-        public LinkedListNode<PointF> Topright
-        {
-            get
-            {
-                return topright;
-            }
-
-            set
-            {
-                topright = value;
-                clearGraphics();
-                drawAll();
-                refreshGraphics();
-                pause(pauseTime);
-            }
-        }
-
-        public LinkedListNode<PointF> BottomLeft
-        {
-            get
-            {
-                return bottomLeft;
-            }
-
-            set
-            {
-                bottomLeft = value;
-                clearGraphics();
-                drawAll();
-                refreshGraphics();
-                pause(pauseTime);
-            }
-        }
-
-        public LinkedListNode<PointF> Bottomright
-        {
-            get
-            {
-                return bottomright;
-            }
-
-            set
-            {
-                bottomright = value;
                 clearGraphics();
                 drawAll();
                 refreshGraphics();
@@ -186,96 +114,73 @@ namespace _1_convex_hull
 
         public ConvexHull merge(ConvexHull second)
         {
+            LinkedListNode<PointF> topRight = null;
+            LinkedListNode<PointF> topLeft = null;
+            LinkedListNode<PointF> bottomRight = null;
+            LinkedListNode<PointF> bottomLeft = null;
             neighbor = second;
+            //RESET CURRENT
             this.Current = this.right;
             second.Current = second.left;
             bool changed = true;
             while(changed)
             {
-                bool changedRight = true;
-                while(changedRight)
-                    changedRight = findRight(this, second);
-                bool changedLeft = true;
-                while(changedLeft)
-                    changedLeft =  findLeft(this, second);
-                changed = changedRight || changedLeft;
+                topRight = findTopRight(this.current, second.current);
+                if (topRight.Value.Equals(second.current.Value))
+                {
+                    changed = false;
+                }
+                else
+                {
+                    second.points.Remove(this.current.Value);
+                    second.Current = topRight;
+                }
+                topLeft = findTopLeft(this.current, second.current);
+                if (topRight.Value.Equals(this.current.Value))
+                {
+                    changed = false;
+                }
+                else
+                {
+                    this.points.Remove(this.current.Value);
+                    this.Current = topLeft;
+                }
             }
 
-            TopLeft = this.Current;
-            Topright = second.Current;
-
+            //RESET CURRENT
             this.Current = this.right;
             second.Current = second.left;
             changed = true;
             while (changed)
             {
-                bool changedRight = true;
-                while (changedRight)
-                    changedRight = findRight(second, this);
-                bool changedLeft = true;
-                while (changedLeft)
-                    changedLeft = findLeft(second, this);
-                changed = changedRight || changedLeft;
+                bottomRight = findBottomRight(this.current, second.current);
+                if (bottomRight.Value.Equals(second.current.Value))
+                {
+                    changed = false;
+                }
+                else
+                {
+                    second.points.Remove(second.current.Value);
+                    second.Current = bottomRight;
+                }
+                bottomLeft = findBottomLeft(this.current, second.current);
+                if (bottomLeft.Value.Equals(this.current.Value))
+                {
+                    changed = false;
+                }
+                else
+                {
+                    this.points.Remove(this.current.Value);
+                    this.Current = bottomLeft;
+                }
             }
-            BottomLeft = this.Current;
-            Bottomright = second.Current;
 
             //find values
-            List<PointF> combined = new List<PointF>();
-            combined.Sort(new PointFComparer());
-            LinkedListNode<PointF> temp = bottomLeft;
-            while(!temp.Value.Equals(next(topLeft).Value))
+            for (int i = 0; i < second.points.Count; i++)
             {
-                combined.Add(temp.Value);
-                temp = next(temp);
+                this.points.AddAfter(this.current, next(second.current).Value);
             }
-            temp = topright;
-            while (!temp.Value.Equals(next(bottomright).Value))
-            {
-                combined.Add(temp.Value);
-                temp = next(temp);
-            }
-
-            //List<PointF> combined = new List<PointF>();
-            //combined.AddRange(points.TakeWhile(x => !x.Equals(topLeft.Value)).Reverse().TakeWhile(x => !x.Equals(bottomLeft.Value)));
-            //combined.AddRange(second.points.SkipWhile(x=>!x.Equals(topright)).TakeWhile(x=>!x.Equals(Bottomright)));
-            //combined.Add(topLeft.Value);
-            //combined.Add(bottomLeft.Value);
-            //combined.Add(bottomright.Value);
-            //combined.Add(Topright.Value);
-            //HashSet<PointF> set = new HashSet<PointF>(combined);
-            //return new ConvexHull(new LinkedList<PointF>(combined), second.right.Value);
-            return new ConvexHull(combined);
-        }
-
-        public bool findRight(ConvexHull counter, ConvexHull clock)
-        {
-            bool changed = false;
-            float currentslope = getSlope(counter.Current, clock.Current);
-            float nextslope = getSlope(counter.Current, next(clock.Current));
-            while(nextslope < currentslope)
-            {
-                changed = true;
-                clock.Current = next(clock.Current);
-                currentslope = nextslope;
-                nextslope = getSlope(counter.Current, next(clock.Current)); ;
-            }
-
-            return changed;
-        }
-        private bool findLeft(ConvexHull counter, ConvexHull clock)
-        {
-            bool changed = false;
-            float currentslope = getSlope(clock.Current, counter.Current);
-            float prevslope = getSlope(clock.Current, prev(counter.Current));
-            while (prevslope > currentslope)
-            {
-                changed = true;
-                counter.Current = prev(counter.Current);
-                currentslope = prevslope;
-                prevslope = getSlope(clock.Current, prev(counter.Current)); ;
-            }
-            return changed;
+            return new ConvexHull(this.points.ToList());
         }
 
         private float getSlope(LinkedListNode<PointF> left, LinkedListNode<PointF> right)
@@ -356,10 +261,47 @@ namespace _1_convex_hull
 
         private void drawTopBottom()
         {
-            if(topLeft != null && topright != null)
-                ConvexHullSolver._instance.graphic.DrawLine(new Pen(Brushes.Green), topLeft.Value, topright.Value);
-            if(bottomLeft != null && bottomright != null)
-                ConvexHullSolver._instance.graphic.DrawLine(new Pen(Brushes.Orange), bottomLeft.Value, bottomright.Value);
+            //if(topLeft != null && topright != null)
+            //    ConvexHullSolver._instance.graphic.DrawLine(new Pen(Brushes.Green), topLeft.Value, topright.Value);
+            //if(bottomLeft != null && bottomright != null)
+            //    ConvexHullSolver._instance.graphic.DrawLine(new Pen(Brushes.Orange), bottomLeft.Value, bottomright.Value);
+        }
+
+        private LinkedListNode<PointF> findTopRight(LinkedListNode<PointF> left, LinkedListNode<PointF> right)
+        {
+            LinkedListNode<PointF> temp = right;
+            while(getSlope(left,next(temp)) > getSlope(left, temp))
+            {
+                temp = next(temp);
+            }
+            return temp;
+        }
+        private LinkedListNode<PointF> findBottomRight(LinkedListNode<PointF> left, LinkedListNode<PointF> right)
+        {
+            LinkedListNode<PointF> temp = right;
+            while (getSlope(left, prev(temp)) < getSlope(left, temp))
+            {
+                temp = prev(temp);
+            }
+            return temp;
+        }
+        private LinkedListNode<PointF> findTopLeft(LinkedListNode<PointF> left, LinkedListNode<PointF> right)
+        {
+            LinkedListNode<PointF> temp = left;
+            while (getSlope(prev(temp), right) < getSlope(temp, right))
+            {
+                temp = prev(temp);
+            }
+            return temp;
+        }
+        private LinkedListNode<PointF> findBottomLeft(LinkedListNode<PointF> left, LinkedListNode<PointF> right)
+        {
+            LinkedListNode<PointF> temp = left;
+            while (getSlope(next(temp), right) > getSlope(temp, right))
+            {
+                temp = next(temp);
+            }
+            return temp;
         }
 
     }
