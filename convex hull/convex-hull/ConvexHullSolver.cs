@@ -39,7 +39,7 @@ namespace _2_convex_hull
             pointList.Sort(new Utils.PointFComparerByX());
             List<PointF> sortedPoints = new List<PointF>(pointList);
             ConvexHull hull = generateHull(sortedPoints);
-            graphic.Clear(Color.White);
+            //graphic.Clear(Color.White);
             hull.drawHull();
         }
 

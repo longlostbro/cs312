@@ -31,10 +31,10 @@ namespace _1_convex_hull
             set
             {
                 current = value;
-                clearGraphics();
-                drawAll();
-                refreshGraphics();
-                pause(pauseTime);
+                //clearGraphics();
+                //drawAll();
+                //refreshGraphics();
+                //pause(pauseTime);
             }
         }
 
@@ -48,10 +48,10 @@ namespace _1_convex_hull
             set
             {
                 topRight = value;
-                clearGraphics();
-                drawAll();
-                refreshGraphics();
-                pause(pauseTime);
+                //clearGraphics();
+                //drawAll();
+                //refreshGraphics();
+                //pause(pauseTime);
             }
         }
 
@@ -65,10 +65,10 @@ namespace _1_convex_hull
             set
             {
                 topLeft = value;
-                clearGraphics();
-                drawAll();
-                refreshGraphics();
-                pause(pauseTime);
+                //clearGraphics();
+                //drawAll();
+                //refreshGraphics();
+                //pause(pauseTime);
             }
         }
 
@@ -82,10 +82,10 @@ namespace _1_convex_hull
             set
             {
                 bottomRight = value;
-                clearGraphics();
-                drawAll();
-                refreshGraphics();
-                pause(pauseTime);
+                //clearGraphics();
+                //drawAll();
+                //refreshGraphics();
+                //pause(pauseTime);
             }
         }
 
@@ -99,10 +99,10 @@ namespace _1_convex_hull
             set
             {
                 bottomLeft = value;
-                clearGraphics();
-                drawAll();
-                refreshGraphics();
-                pause(pauseTime);
+                //clearGraphics();
+                //drawAll();
+                //refreshGraphics();
+                //pause(pauseTime);
             }
         }
 
@@ -259,7 +259,7 @@ namespace _1_convex_hull
                 List<PointF> tempPoints = new List<PointF>(points);
                 tempPoints.Add(points.First());
                 ConvexHullSolver._instance.graphic.DrawLines(new Pen(Brushes.Blue), tempPoints.ToArray());
-                labelPoints();
+                //labelPoints();
             }
         }
 
