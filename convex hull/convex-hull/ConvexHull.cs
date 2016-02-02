@@ -24,8 +24,12 @@ namespace _1_convex_hull
         public ConvexHull(List<PointF> pointList)
         {
             PointF right = pointList.Last();
-                        pointList.Sort(new Utils.PointFComparerBySlope(pointList.First()));
-            points = new List<PointF>(pointList);
+            //pointList.Sort(new Utils.PointFComparerBySlope(pointList.First()));
+
+            PointF left = pointList.First();
+            pointList.Remove(left);
+            points = pointList.OrderByDescending(x => Utils.calculateSlope(left, x)).ToList();//new List<PointF>(pointList);
+            points.Insert(0, left);
             
             this.right = points.IndexOf(right);
         }
@@ -141,24 +145,6 @@ namespace _1_convex_hull
             return new ConvexHull(combined,combined.IndexOf(right));
         }
 
-        
-
-
-        private void clearGraphics()
-        {
-            ConvexHullSolver._instance.graphic.Clear(Color.White);
-        }
-
-        private void refreshGraphics()
-        {
-            ConvexHullSolver._instance.Refresh();
-        }
-
-        private void pause(int milliseconds)
-        {
-            ConvexHullSolver._instance.Pause(milliseconds);
-        }
-
         public void drawHull()
         {
             if (points != null && points.Count > 0)
@@ -167,48 +153,6 @@ namespace _1_convex_hull
                 tempPoints.Add(points.First());
                 ConvexHullSolver._instance.graphic.DrawLines(new Pen(Brushes.Blue), tempPoints.ToArray());
             }
-        }
-
-        private void drawcurrentTocurrent()
-        {
-            if (neighbor != null && neighbor.current != -1 && points != null)
-            {
-                ConvexHullSolver._instance.graphic.DrawLine(new Pen(Brushes.Red), points[this.current], neighbor.points[neighbor.current]);
-            }
-        }
-
-        public void drawNeighbor()
-        {
-            if (neighbor != null && neighbor.points != null)
-            {
-                List<PointF> tempPoints2 = new List<PointF>(neighbor.points);
-                tempPoints2.Add(neighbor.points.First());
-                ConvexHullSolver._instance.graphic.DrawLines(new Pen(Brushes.Blue), tempPoints2.ToArray());
-            }
-        }
-
-        public void labelPoints()
-        {
-            int i = 0;
-            if(points != null)
-            foreach(PointF point in points)
-            {
-                ConvexHullSolver._instance.graphic.DrawString(String.Format("{0}", i++),new Font("Tahoma",8),Brushes.Black, point);
-            }
-            i = 0;
-            if(neighbor != null && neighbor.points != null)
-            foreach (PointF point in neighbor.points)
-            {
-                ConvexHullSolver._instance.graphic.DrawString(String.Format("{0}", i++), new Font("Tahoma", 8), Brushes.Black, point);
-            }
-        }
-
-        private void drawTopBottom()
-        {
-            if (topLeft != -1 && topRight != -1)
-                ConvexHullSolver._instance.graphic.DrawLine(new Pen(Brushes.Green), this.points[topLeft], neighbor.points[topRight]);
-            if (bottomLeft != -1 && bottomRight != -1)
-                ConvexHullSolver._instance.graphic.DrawLine(new Pen(Brushes.Orange), this.points[bottomLeft], neighbor.points[bottomRight]);
         }
 
         private int findtopRight(int pivot, int right)
