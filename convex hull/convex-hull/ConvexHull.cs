@@ -119,7 +119,7 @@ namespace _1_convex_hull
             this.right = points.IndexOf(right);
             if (this.right == -1)
             {
-                System.Console.WriteLine("error");
+                MessageBox.Show("Right not found");
             }
         }
 
@@ -133,7 +133,7 @@ namespace _1_convex_hull
             this.right = right;
             if(this.right == -1)
             {
-                System.Console.WriteLine("error");
+                MessageBox.Show("Right not set");
             }
         }
 
@@ -146,35 +146,46 @@ namespace _1_convex_hull
             bool changed = true;
             bool changedfirst = false;
             bool changedsecond = false;
+            bool firstRunRight = true;
+            bool firstRunLeft = true;
             drawAll();
             refreshGraphics();
-            while(changed)
+            while(changedfirst || changedsecond || firstRunLeft || firstRunRight)
             {
-                TopRight = findTopRight(this.current, second.current);
-                if (second.points[TopRight].Equals(second.points[second.current]))
+                if (firstRunRight || changedsecond)
                 {
-                    changedfirst = false;
+                    firstRunRight = false;
+                    TopRight = findTopRight(this.current, second.current);
+                    if (second.points[TopRight].Equals(second.points[second.current]))
+                    {
+                        changedfirst = false;
+                        changedsecond = false;
+                    }
+                    else
+                    {
+                        changedfirst = true;
+                        second.Current = TopRight;
+                    }
+                    //drawAll();
+                    //refreshGraphics();
                 }
-                else
+                if (firstRunLeft || changedfirst)
                 {
-                    changedfirst = true;
-                    second.Current = TopRight;
+                    firstRunLeft = false;
+                    TopLeft = findTopLeft(this.current, second.current);
+                    if (points[TopLeft].Equals(points[this.current]))
+                    {
+                        changedsecond = false;
+                        changedfirst = false;
+                    }
+                    else
+                    {
+                        changedsecond = true;
+                        this.Current = TopLeft;
+                    }
+                    //drawAll();
+                    //refreshGraphics();
                 }
-                drawAll();
-                refreshGraphics();
-                TopLeft = findTopLeft(this.current, second.current);
-                if (points[TopLeft].Equals(points[this.current]))
-                {
-                    changedsecond = false;
-                }
-                else
-                {
-                    changedsecond = true;
-                    this.Current = TopLeft;
-                }
-                drawAll();
-                refreshGraphics();
-                changed = changedfirst || changedsecond;
             }
 
             //RESET CURRENT
@@ -183,31 +194,42 @@ namespace _1_convex_hull
             changed = true;
             changedfirst = false;
             changedsecond = false;
-            while (changed)
+            firstRunLeft = true;
+            firstRunRight = true;
+            while (changedfirst || changedsecond || firstRunLeft || firstRunRight)
             {
-                BottomRight = findBottomRight(this.current, second.current);
-                if (second.points[BottomRight].Equals(second.points[second.current]))
+                if (firstRunRight || changedsecond)
                 {
-                    changedfirst = false;
+                    firstRunRight = false;
+                    BottomRight = findBottomRight(this.current, second.current);
+                    if (second.points[BottomRight].Equals(second.points[second.current]))
+                    {
+                        changedfirst = false;
+                        changedsecond = false;
+                    }
+                    else
+                    {
+                        changedfirst = true;
+                        second.Current = BottomRight;
+                    }
                 }
-                else
+                if (firstRunLeft || changedsecond)
                 {
-                    changedfirst = true;
-                    second.Current = BottomRight;
+                    firstRunLeft = false;
+                    BottomLeft = findBottomLeft(this.current, second.current);
+                    if (this.points[BottomLeft].Equals(this.points[this.current]))
+                    {
+                        changedsecond = false;
+                        changedfirst = false;
+                    }
+                    else
+                    {
+                        changedsecond = true;
+                        this.Current = BottomLeft;
+                    }
                 }
-                BottomLeft = findBottomLeft(this.current, second.current);
-                if (this.points[BottomLeft].Equals(this.points[this.current]))
-                {
-                    changedsecond = false;
-                }
-                else
-                {
-                    changedsecond = true;
-                    this.Current = BottomLeft;
-                }
-                drawAll();
-                refreshGraphics();
-                changed = changedfirst || changedsecond;
+                //drawAll();
+                //refreshGraphics();
             }
 
             //find values

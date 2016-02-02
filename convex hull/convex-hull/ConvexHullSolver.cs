@@ -36,8 +36,7 @@ namespace _2_convex_hull
 
         public void Solve(List<System.Drawing.PointF> pointList)
         {
-            pointList.Sort(new Utils.PointFComparerByX());
-            List<PointF> sortedPoints = new List<PointF>(pointList);
+            List<PointF> sortedPoints = pointList.OrderBy(p => p.X).ToList();
             ConvexHull hull = generateHull(sortedPoints);
             //graphic.Clear(Color.White);
             hull.drawHull();

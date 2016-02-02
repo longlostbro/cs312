@@ -8,16 +8,7 @@ namespace _1_convex_hull
 {
     public class Utils
     {
-        public class PointFComparerByX : IComparer<PointF>
-        {
-
-            public int Compare(PointF first, PointF second)
-            {
-                if (first.X > second.X)
-                    return 1;
-                return -1;
-            }
-        }
+        
         public class PointFComparerBySlope : IComparer<PointF>
         {
             private PointF pivot;
@@ -41,20 +32,6 @@ namespace _1_convex_hull
             }
         }
 
-        public class PointFComparerByXY : IComparer<PointF>
-        {
-            public int Compare(PointF first, PointF second)
-            {
-                if (first.X == second.X)
-                {
-                    return (int)(first.Y - second.Y);
-                }
-                else
-                {
-                    return (int)(first.X - second.X);
-                }
-            }
-        }
         public static float calculateSlope(PointF left, PointF right)
         {
             return -(right.Y - left.Y) / (right.X - left.X);
