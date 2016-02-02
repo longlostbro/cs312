@@ -33,9 +33,9 @@ namespace _1_convex_hull
                     return 1;
                 if (calculateSlope(pivot, first) > calculateSlope(pivot, second))
                 {
-                    return 1;
+                    return -1;
                 }
-                return -1;
+                return 1;
             }
         }
 
@@ -55,7 +55,7 @@ namespace _1_convex_hull
         }
         public static float calculateSlope(PointF left, PointF right)
         {
-            return (right.Y - left.Y) / (right.X - right.Y);
+            return -(right.Y - left.Y) / (right.X - left.X);
         }
     }
 }
