@@ -25,10 +25,10 @@ namespace _1_convex_hull
         {
             PointF right = pointList.Last();
             //pointList.Sort(new Utils.PointFComparerBySlope(pointList.First()));
-
+            //points = new List<PointF>(pointList);
             PointF left = pointList.First();
             pointList.Remove(left);
-            points = pointList.OrderByDescending(x => Utils.calculateSlope(left, x)).ToList();//new List<PointF>(pointList);
+            points = pointList.OrderByDescending(x => Utils.calculateSlope(left, x)).ToList();
             points.Insert(0, left);
             
             this.right = points.IndexOf(right);
