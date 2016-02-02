@@ -38,7 +38,6 @@ namespace _2_convex_hull
         {
             List<PointF> sortedPoints = pointList.OrderBy(p => p.X).ToList();
             ConvexHull hull = generateHull(sortedPoints);
-            //graphic.Clear(Color.White);
             hull.drawHull();
         }
 
@@ -56,19 +55,7 @@ namespace _2_convex_hull
                 ConvexHull second = generateHull(secondArray);
                 return first.merge(second);
             }
-
         }
-
-        public string ListToString(List<PointF> points)
-        {
-            StringBuilder str = new StringBuilder();
-            points.ForEach(o => str.Append(o + ","));
-            return str.ToString().Substring(0, str.Length - 2);
-        }
-
     }
-
-
-    
 }
 

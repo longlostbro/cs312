@@ -14,149 +14,45 @@ namespace _1_convex_hull
         int current = -1;
         int left = 0;
         int right = -1;
-        int pauseTime = 0;
+        //int pauseTime = 0;
         ConvexHull neighbor;
         int topRight = -1;
         int topLeft = -1;
         int bottomRight = -1;
         int bottomLeft = -1;
 
-        public int Current
-        {
-            get
-            {
-                return current;
-            }
-
-            set
-            {
-                current = value;
-                //clearGraphics();
-                //drawAll();
-                //refreshGraphics();
-                //pause(pauseTime);
-            }
-        }
-
-        public int TopRight
-        {
-            get
-            {
-                return topRight;
-            }
-
-            set
-            {
-                topRight = value;
-                //clearGraphics();
-                //drawAll();
-                //refreshGraphics();
-                //pause(pauseTime);
-            }
-        }
-
-        public int TopLeft
-        {
-            get
-            {
-                return topLeft;
-            }
-
-            set
-            {
-                topLeft = value;
-                //clearGraphics();
-                //drawAll();
-                //refreshGraphics();
-                //pause(pauseTime);
-            }
-        }
-
-        public int BottomRight
-        {
-            get
-            {
-                return bottomRight;
-            }
-
-            set
-            {
-                bottomRight = value;
-                //clearGraphics();
-                //drawAll();
-                //refreshGraphics();
-                //pause(pauseTime);
-            }
-        }
-
-        public int BottomLeft
-        {
-            get
-            {
-                return bottomLeft;
-            }
-
-            set
-            {
-                bottomLeft = value;
-                //clearGraphics();
-                //drawAll();
-                //refreshGraphics();
-                //pause(pauseTime);
-            }
-        }
-
         public ConvexHull(List<PointF> pointList)
         {
             PointF right = pointList.Last();
                         pointList.Sort(new Utils.PointFComparerBySlope(pointList.First()));
             points = new List<PointF>(pointList);
-
-            if (points[0].X > points[1].X)
-            {
-                MessageBox.Show("Problem with x sort");
-            }
+            
             this.right = points.IndexOf(right);
-            if (this.right == -1)
-            {
-                MessageBox.Show("Right not found");
-            }
         }
 
         public ConvexHull(List<PointF> pointList, int right)
         {
-            if (pointList[0].X > pointList[1].X)
-            {
-                MessageBox.Show("Problem with x sort");
-            }
             points = pointList;
             this.right = right;
-            if(this.right == -1)
-            {
-                MessageBox.Show("Right not set");
-            }
         }
 
         public ConvexHull merge(ConvexHull second)
         {
             neighbor = second;
-            //RESET CURRENT
-            this.Current = this.right;
-            second.Current = second.left;
-            bool changed = true;
+            //RESET current
+            this.current = this.right;
+            second.current = second.left;
             bool changedfirst = false;
             bool changedsecond = false;
             bool firstRunRight = true;
             bool firstRunLeft = true;
-            drawAll();
-            refreshGraphics();
             while(changedfirst || changedsecond || firstRunLeft || firstRunRight)
             {
                 if (firstRunRight || changedsecond)
                 {
                     firstRunRight = false;
-                    TopRight = findTopRight(this.current, second.current);
-                    if (second.points[TopRight].Equals(second.points[second.current]))
+                    topRight = findtopRight(this.current, second.current);
+                    if (second.points[topRight].Equals(second.points[second.current]))
                     {
                         changedfirst = false;
                         changedsecond = false;
@@ -164,16 +60,14 @@ namespace _1_convex_hull
                     else
                     {
                         changedfirst = true;
-                        second.Current = TopRight;
+                        second.current = topRight;
                     }
-                    //drawAll();
-                    //refreshGraphics();
                 }
                 if (firstRunLeft || changedfirst)
                 {
                     firstRunLeft = false;
-                    TopLeft = findTopLeft(this.current, second.current);
-                    if (points[TopLeft].Equals(points[this.current]))
+                    topLeft = findtopLeft(this.current, second.current);
+                    if (points[topLeft].Equals(points[this.current]))
                     {
                         changedsecond = false;
                         changedfirst = false;
@@ -181,17 +75,14 @@ namespace _1_convex_hull
                     else
                     {
                         changedsecond = true;
-                        this.Current = TopLeft;
+                        this.current = topLeft;
                     }
-                    //drawAll();
-                    //refreshGraphics();
                 }
             }
 
-            //RESET CURRENT
-            this.Current = this.right;
-            second.Current = second.left;
-            changed = true;
+            //RESET current
+            this.current = this.right;
+            second.current = second.left;
             changedfirst = false;
             changedsecond = false;
             firstRunLeft = true;
@@ -201,8 +92,8 @@ namespace _1_convex_hull
                 if (firstRunRight || changedsecond)
                 {
                     firstRunRight = false;
-                    BottomRight = findBottomRight(this.current, second.current);
-                    if (second.points[BottomRight].Equals(second.points[second.current]))
+                    bottomRight = findbottomRight(this.current, second.current);
+                    if (second.points[bottomRight].Equals(second.points[second.current]))
                     {
                         changedfirst = false;
                         changedsecond = false;
@@ -210,14 +101,14 @@ namespace _1_convex_hull
                     else
                     {
                         changedfirst = true;
-                        second.Current = BottomRight;
+                        second.current = bottomRight;
                     }
                 }
                 if (firstRunLeft || changedsecond)
                 {
                     firstRunLeft = false;
-                    BottomLeft = findBottomLeft(this.current, second.current);
-                    if (this.points[BottomLeft].Equals(this.points[this.current]))
+                    bottomLeft = findbottomLeft(this.current, second.current);
+                    if (this.points[bottomLeft].Equals(this.points[this.current]))
                     {
                         changedsecond = false;
                         changedfirst = false;
@@ -225,11 +116,9 @@ namespace _1_convex_hull
                     else
                     {
                         changedsecond = true;
-                        this.Current = BottomLeft;
+                        this.current = bottomLeft;
                     }
                 }
-                //drawAll();
-                //refreshGraphics();
             }
 
             //find values
@@ -239,20 +128,16 @@ namespace _1_convex_hull
             {
                 combined.Add(this.points[i]);
             }
-            for(int i = TopRight; i != bottomRight; i = nextInt(second.points,i))
+            for(int i = topRight; i != bottomRight; i = nextInt(second.points.Count,i))
             {
                 combined.Add(second.points[i]);
             }
-            combined.Add(second.points[BottomRight]);
-            for(int i = bottomLeft; i != 0; i = nextInt(this.points,i))
+            combined.Add(second.points[bottomRight]);
+            for(int i = bottomLeft; i != 0; i = nextInt(this.points.Count,i))
             {
                 combined.Add(this.points[i]);
             }
-
-            if (combined[0].X > combined[1].X)
-            {
-                MessageBox.Show("Problem with x sort");
-            }
+            
             return new ConvexHull(combined,combined.IndexOf(right));
         }
 
@@ -281,11 +166,10 @@ namespace _1_convex_hull
                 List<PointF> tempPoints = new List<PointF>(points);
                 tempPoints.Add(points.First());
                 ConvexHullSolver._instance.graphic.DrawLines(new Pen(Brushes.Blue), tempPoints.ToArray());
-                //labelPoints();
             }
         }
 
-        private void drawCurrentToCurrent()
+        private void drawcurrentTocurrent()
         {
             if (neighbor != null && neighbor.current != -1 && points != null)
             {
@@ -319,14 +203,6 @@ namespace _1_convex_hull
             }
         }
 
-        public void drawAll()
-        {
-            //drawHull();
-            //drawNeighbor();
-            //drawCurrentToCurrent();
-            //drawTopBottom();
-        }
-
         private void drawTopBottom()
         {
             if (topLeft != -1 && topRight != -1)
@@ -335,61 +211,48 @@ namespace _1_convex_hull
                 ConvexHullSolver._instance.graphic.DrawLine(new Pen(Brushes.Orange), this.points[bottomLeft], neighbor.points[bottomRight]);
         }
 
-        private int findTopRight(int pivot, int right)
+        private int findtopRight(int pivot, int right)
         {
-            while(Utils.calculateSlope(this.points[pivot],next(neighbor.points,right)) > Utils.calculateSlope(this.points[pivot], neighbor.points[right]))
+            while(Utils.calculateSlope(this.points[pivot],neighbor.points[nextInt(neighbor.points.Count,right)]) > Utils.calculateSlope(this.points[pivot], neighbor.points[right]))
             {
-                right = nextInt(neighbor.points, right);
+                right = nextInt(neighbor.points.Count, right);
             }
             return right;
         }
-        private int findBottomRight(int pivot, int right)
+        private int findbottomRight(int pivot, int right)
         {
-            while (Utils.calculateSlope(this.points[pivot], prev(neighbor.points,right)) < Utils.calculateSlope(points[pivot], neighbor.points[right]))
+            while (Utils.calculateSlope(this.points[pivot], neighbor.points[prevInt(neighbor.points.Count,right)]) < Utils.calculateSlope(points[pivot], neighbor.points[right]))
             {
-                right = prevInt(neighbor.points,right);
+                right = prevInt(neighbor.points.Count,right);
             }
             return right;
         }
-        private int findTopLeft(int left, int pivot)
+        private int findtopLeft(int left, int pivot)
         {
-            while (Utils.calculateSlope(neighbor.points[pivot], prev(this.points, left)) < Utils.calculateSlope(neighbor.points[pivot], points[left]))
+            while (Utils.calculateSlope(neighbor.points[pivot], this.points[prevInt(this.points.Count, left)]) < Utils.calculateSlope(neighbor.points[pivot], points[left]))
             {
-                left = prevInt(this.points,left);
+                left = prevInt(this.points.Count,left);
             }
             return left;
         }
-        private int findBottomLeft(int left, int pivot)
+        private int findbottomLeft(int left, int pivot)
         {
-            while (Utils.calculateSlope(neighbor.points[pivot],next(this.points,left)) > Utils.calculateSlope(neighbor.points[pivot], points[left]))
+            while (Utils.calculateSlope(neighbor.points[pivot],this.points[nextInt(this.points.Count,left)]) > Utils.calculateSlope(neighbor.points[pivot], points[left]))
             {
-                left = nextInt(this.points,left);
+                left = nextInt(this.points.Count,left);
             }
             return left;
         }
-
-        private PointF prev(List<PointF> points, int pos)
+        private int prevInt(int count, int pos)
         {
             if (pos == 0)
-                return points[points.Count-1];
-            return points[pos-1];
-        }
-        private int prevInt(List<PointF> points, int pos)
-        {
-            if (pos == 0)
-                return points.Count - 1;
+                return count - 1;
             return pos - 1;
         }
-
-        private PointF next(List<PointF> points, int pos)
+        
+        private int nextInt(int count, int pos)
         {
-            if (pos == points.Count - 1)
-                return points[0];
-            return points[pos+1];
-        }
-        private int nextInt(List<PointF> points, int pos)
-        {
-            if (pos == points.Count - 1)
+            if (pos == count - 1)
                 return 0;
             return pos + 1;
         }

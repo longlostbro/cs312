@@ -34,6 +34,7 @@ namespace _1_convex_hull
 
         public static float calculateSlope(PointF left, PointF right)
         {
+            
             return -(right.Y - left.Y) / (right.X - left.X);
         }
     }
