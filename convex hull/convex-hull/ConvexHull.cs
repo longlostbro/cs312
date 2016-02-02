@@ -108,13 +108,14 @@ namespace _1_convex_hull
 
         public ConvexHull(List<PointF> pointList)
         {
-            if (pointList[0].X > pointList[1].X)
-            {
-                return;
-            }
             PointF right = pointList.Last();
-            pointList.Sort(new Utils.PointFComparerBySlope(pointList.First()));
+                        pointList.Sort(new Utils.PointFComparerBySlope(pointList.First()));
             points = new List<PointF>(pointList);
+
+            if (points[0].X > points[1].X)
+            {
+                MessageBox.Show("Problem with x sort");
+            }
             this.right = points.IndexOf(right);
             if (this.right == -1)
             {
@@ -126,7 +127,7 @@ namespace _1_convex_hull
         {
             if (pointList[0].X > pointList[1].X)
             {
-                return;
+                MessageBox.Show("Problem with x sort");
             }
             points = pointList;
             this.right = right;
@@ -225,6 +226,11 @@ namespace _1_convex_hull
             {
                 combined.Add(this.points[i]);
             }
+
+            if (combined[0].X > combined[1].X)
+            {
+                MessageBox.Show("Problem with x sort");
+            }
             return new ConvexHull(combined,combined.IndexOf(right));
         }
 
@@ -259,7 +265,7 @@ namespace _1_convex_hull
 
         private void drawCurrentToCurrent()
         {
-            if (neighbor != null && neighbor.current != -1)
+            if (neighbor != null && neighbor.current != -1 && points != null)
             {
                 ConvexHullSolver._instance.graphic.DrawLine(new Pen(Brushes.Red), points[this.current], neighbor.points[neighbor.current]);
             }
@@ -293,10 +299,10 @@ namespace _1_convex_hull
 
         public void drawAll()
         {
-            drawHull();
-            drawNeighbor();
-            drawCurrentToCurrent();
-            drawTopBottom();
+            //drawHull();
+            //drawNeighbor();
+            //drawCurrentToCurrent();
+            //drawTopBottom();
         }
 
         private void drawTopBottom()

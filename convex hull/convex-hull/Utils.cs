@@ -13,7 +13,9 @@ namespace _1_convex_hull
 
             public int Compare(PointF first, PointF second)
             {
-                return (int)(first.X - second.X);
+                if (first.X > second.X)
+                    return 1;
+                return -1;
             }
         }
         public class PointFComparerBySlope : IComparer<PointF>
