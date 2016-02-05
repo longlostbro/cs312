@@ -36,7 +36,7 @@ namespace _2_convex_hull
 
         public void Solve(List<System.Drawing.PointF> pointList)
         {
-            List<PointF> sortedPoints = pointList.OrderBy(p => p.X).ToList();
+            List<PointF> sortedPoints = pointList.OrderBy(p => p.X).ToList(); //O(nlogn)
             ConvexHull hull = generateHull(sortedPoints);
             hull.drawHull();
         }
@@ -49,6 +49,7 @@ namespace _2_convex_hull
             }
             else
             {
+                //splitting O(logn)
                 List<PointF> firstArray = new List<PointF>(sortedPoints.Take(sortedPoints.Count / 2));
                 List<PointF> secondArray = new List<PointF>(sortedPoints.Skip(sortedPoints.Count / 2));
                 ConvexHull first = generateHull(firstArray);

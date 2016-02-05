@@ -14,7 +14,6 @@ namespace _1_convex_hull
         int current = -1;
         int left = 0;
         int right = -1;
-        //int pauseTime = 0;
         ConvexHull neighbor;
         int topRight = -1;
         int topLeft = -1;
@@ -24,11 +23,9 @@ namespace _1_convex_hull
         public ConvexHull(List<PointF> pointList)
         {
             PointF right = pointList.Last();
-            //pointList.Sort(new Utils.PointFComparerBySlope(pointList.First()));
-            //points = new List<PointF>(pointList);
             PointF left = pointList.First();
             pointList.Remove(left);
-            points = pointList.OrderByDescending(x => Utils.calculateSlope(left, x)).ToList();
+            points = pointList.OrderByDescending(x => calculateSlope(left, x)).ToList(); //O(nlogn)
             points.Insert(0, left);
             
             this.right = points.IndexOf(right);
@@ -50,12 +47,12 @@ namespace _1_convex_hull
             bool changedsecond = false;
             bool firstRunRight = true;
             bool firstRunLeft = true;
-            while(changedfirst || changedsecond || firstRunLeft || firstRunRight)
+            while(changedfirst || changedsecond || firstRunLeft || firstRunRight)//O(n) times so O(m*n)
             {
                 if (firstRunRight || changedsecond)
                 {
                     firstRunRight = false;
-                    topRight = findtopRight(this.current, second.current);
+                    topRight = findtopRight(this.current, second.current);//O(m)
                     if (second.points[topRight].Equals(second.points[second.current]))
                     {
                         changedfirst = false;
@@ -70,7 +67,7 @@ namespace _1_convex_hull
                 if (firstRunLeft || changedfirst)
                 {
                     firstRunLeft = false;
-                    topLeft = findtopLeft(this.current, second.current);
+                    topLeft = findtopLeft(this.current, second.current);//O(m)
                     if (points[topLeft].Equals(points[this.current]))
                     {
                         changedsecond = false;
@@ -91,12 +88,12 @@ namespace _1_convex_hull
             changedsecond = false;
             firstRunLeft = true;
             firstRunRight = true;
-            while (changedfirst || changedsecond || firstRunLeft || firstRunRight)
+            while (changedfirst || changedsecond || firstRunLeft || firstRunRight)//O(n) times so O(m*n)
             {
                 if (firstRunRight || changedsecond)
                 {
                     firstRunRight = false;
-                    bottomRight = findbottomRight(this.current, second.current);
+                    bottomRight = findbottomRight(this.current, second.current);//O(m)
                     if (second.points[bottomRight].Equals(second.points[second.current]))
                     {
                         changedfirst = false;
@@ -111,7 +108,7 @@ namespace _1_convex_hull
                 if (firstRunLeft || changedsecond)
                 {
                     firstRunLeft = false;
-                    bottomLeft = findbottomLeft(this.current, second.current);
+                    bottomLeft = findbottomLeft(this.current, second.current);//O(m)
                     if (this.points[bottomLeft].Equals(this.points[this.current]))
                     {
                         changedsecond = false;
@@ -155,33 +152,33 @@ namespace _1_convex_hull
             }
         }
 
-        private int findtopRight(int pivot, int right)
+        private int findtopRight(int pivot, int right) //O(n)
         {
-            while(Utils.calculateSlope(this.points[pivot],neighbor.points[nextInt(neighbor.points.Count,right)]) > Utils.calculateSlope(this.points[pivot], neighbor.points[right]))
+            while(calculateSlope(this.points[pivot],neighbor.points[nextInt(neighbor.points.Count,right)]) > calculateSlope(this.points[pivot], neighbor.points[right]))
             {
                 right = nextInt(neighbor.points.Count, right);
             }
             return right;
         }
-        private int findbottomRight(int pivot, int right)
+        private int findbottomRight(int pivot, int right)//O(n)
         {
-            while (Utils.calculateSlope(this.points[pivot], neighbor.points[prevInt(neighbor.points.Count,right)]) < Utils.calculateSlope(points[pivot], neighbor.points[right]))
+            while (calculateSlope(this.points[pivot], neighbor.points[prevInt(neighbor.points.Count,right)]) < calculateSlope(points[pivot], neighbor.points[right]))
             {
                 right = prevInt(neighbor.points.Count,right);
             }
             return right;
         }
-        private int findtopLeft(int left, int pivot)
+        private int findtopLeft(int left, int pivot)//O(n)
         {
-            while (Utils.calculateSlope(neighbor.points[pivot], this.points[prevInt(this.points.Count, left)]) < Utils.calculateSlope(neighbor.points[pivot], points[left]))
+            while (calculateSlope(neighbor.points[pivot], this.points[prevInt(this.points.Count, left)]) < calculateSlope(neighbor.points[pivot], points[left]))
             {
                 left = prevInt(this.points.Count,left);
             }
             return left;
         }
-        private int findbottomLeft(int left, int pivot)
+        private int findbottomLeft(int left, int pivot)//O(n)
         {
-            while (Utils.calculateSlope(neighbor.points[pivot],this.points[nextInt(this.points.Count,left)]) > Utils.calculateSlope(neighbor.points[pivot], points[left]))
+            while (calculateSlope(neighbor.points[pivot],this.points[nextInt(this.points.Count,left)]) > calculateSlope(neighbor.points[pivot], points[left]))
             {
                 left = nextInt(this.points.Count,left);
             }
@@ -199,6 +196,11 @@ namespace _1_convex_hull
             if (pos == count - 1)
                 return 0;
             return pos + 1;
+        }
+        public static float calculateSlope(PointF left, PointF right) // O(1)
+        {
+
+            return -(right.Y - left.Y) / (right.X - left.X);
         }
     }
 }
