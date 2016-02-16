@@ -162,6 +162,10 @@ namespace NetworkRouting
 
         private void solveButton_Clicked()
         {
+            int start = startNodeIndex;
+            int stop = stopNodeIndex;
+            List<PointF> points = this.points;
+            List<HashSet<int>> adjacencyList = this.adjacencyList;
             // *** Implement this method, use the variables "startNodeIndex" and "stopNodeIndex" as the indices for your start and stop points, respectively ***
         }
 
