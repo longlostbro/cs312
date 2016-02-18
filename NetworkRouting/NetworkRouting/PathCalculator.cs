@@ -8,9 +8,11 @@ namespace NetworkRouting
 {
     public class PathCalculator
     {
+        
         public static List<int> findShortestByArray(List<PointF> points, List<HashSet<int>> connections)
         {
             return new List<int>();
+        
         }
 
 
@@ -19,19 +21,16 @@ namespace NetworkRouting
             return new List<int>();
         }
 
-        private void dijkstra()
+        private void dijkstra(int startingIndex, List<PointF> points, List<HashSet<int>> connections)
         {
-            List<int> shortestPath;
-            int distance = Int32.MaxValue;
-            
-            
-
-
-            if(tempDistance < distance)
+            List<int> prev = new List<int>();
+            List<double> dist = new List<double>();
+            foreach(PointF point in points)
             {
-                shortestPath = tempPoints;
-                distance = tempDistance;
+                dist.Add(Double.MaxValue);
+                prev.Add(-1);
             }
+            dist[startingIndex] = 0;
         }
     }
 }
