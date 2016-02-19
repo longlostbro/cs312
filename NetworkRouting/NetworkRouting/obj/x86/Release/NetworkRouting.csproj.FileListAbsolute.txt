@@ -16,3 +16,7 @@ C:\Users\Dan\Desktop\NetworkRouting\NetworkRouting\obj\x86\Release\NetworkRoutin
 C:\Users\Dan\Desktop\NetworkRouting\NetworkRouting\obj\x86\Release\NetworkRouting.pdb
 C:\Users\dtaylor\Source\Repos\School\cs312\NetworkRouting\NetworkRouting\obj\x86\Release\NetworkRouting.exe
 C:\Users\dtaylor\Source\Repos\School\cs312\NetworkRouting\NetworkRouting\obj\x86\Release\NetworkRouting.pdb
+C:\Users\dtaylor\Source\Repos\School\cs312\NetworkRouting\NetworkRouting\obj\x86\Release\NetworkRouting.csprojResolveAssemblyReference.cache
+C:\Users\dtaylor\Source\Repos\School\cs312\NetworkRouting\NetworkRouting\obj\x86\Release\NetworkRouting.Form1.resources
+C:\Users\dtaylor\Source\Repos\School\cs312\NetworkRouting\NetworkRouting\obj\x86\Release\NetworkRouting.Properties.Resources.resources
+C:\Users\dtaylor\Source\Repos\School\cs312\NetworkRouting\NetworkRouting\obj\x86\Release\NetworkRouting.csproj.GenerateResource.Cache
