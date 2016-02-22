@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Windows.Forms;
 
 namespace NetworkRouting
 {
     public class PathCalculator
     {
 
-        public static void findShortestByArray(int startingIndex, List<PointF> points, List<HashSet<int>> connections, int stopIndex, Graphics graphics)
+        public static void findShortestByArray(TextBox cost, TextBox time,int startingIndex, List<PointF> points, List<HashSet<int>> connections, int stopIndex, Graphics graphics)
         {
             DijkstraResult result = dijkstra(startingIndex, points, connections, PriorityQueueFactory.QueueType.Array);
             List<int> prev = result.getPrev();
@@ -32,7 +33,11 @@ namespace NetworkRouting
             }
             if(isPath)
             {
-
+                cost.Text = String.Format("{0}",(int)dist.Last());
+            }
+            else
+            {
+                cost.Text = "No path";
             }
         }
 

@@ -162,7 +162,7 @@ namespace NetworkRouting
 
         private void solveButton_Clicked()
         {
-            PathCalculator.findShortestByArray(startNodeIndex, points, adjacencyList, stopNodeIndex, graphics);
+            PathCalculator.findShortestByArray(pathCostBox,arrayTimeBox,startNodeIndex, points, adjacencyList, stopNodeIndex, graphics);
             // *** Implement this method, use the variables "startNodeIndex" and "stopNodeIndex" as the indices for your start and stop points, respectively ***
         }
 
