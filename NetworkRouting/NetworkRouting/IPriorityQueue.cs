@@ -88,7 +88,7 @@ namespace NetworkRouting
 
         public override bool isEmpty()
         {
-            return distances.Where(x => x != -1).Count() == 0;
+            return distances[0] == -1;
         }
         private void HeapifyUp(int childIdx)
         {

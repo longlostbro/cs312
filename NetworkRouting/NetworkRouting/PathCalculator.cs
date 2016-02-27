@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -10,11 +11,11 @@ namespace NetworkRouting
     public class PathCalculator
     {
 
-        public static void findShortestByArray(TextBox cost, TextBox time,int startingIndex, List<PointF> points, List<HashSet<int>> connections, int stopIndex, Graphics graphics)
+        public static void shortest(TextBox cost, TextBox arrayTimeBox, TextBox heapTimeBox, TextBox xspeedupBox,int startingIndex, List<PointF> points, List<HashSet<int>> connections, int stopIndex, Graphics graphics, bool compare)
         {
-            DijkstraResult result = dijkstra(startingIndex, points, connections, PriorityQueueFactory.QueueType.Heap);
-            List<int> prev = result.getPrev();
-            List<double> dist = result.getDist();
+            DijkstraResult heapResult = dijkstra(startingIndex, points, connections, PriorityQueueFactory.QueueType.Heap);
+            List<int> prev = heapResult.getPrev();
+            List<double> dist = heapResult.getDist();
             int currentIndex = stopIndex;
             bool isPath = true;
             while(currentIndex != startingIndex)
@@ -33,7 +34,14 @@ namespace NetworkRouting
             }
             if(isPath)
             {
+                if (compare)
+                {
+                    DijkstraResult arrayResult = dijkstra(startingIndex, points, connections, PriorityQueueFactory.QueueType.Array);
+                    arrayTimeBox.Text = String.Format("{0}",arrayResult.getTime());
+                    xspeedupBox.Text = String.Format("{0}", arrayResult.getTime()/ heapResult.getTime());
+                }
                 cost.Text = String.Format("{0}",(int)dist.Last());
+                heapTimeBox.Text = String.Format("{0}", heapResult.getTime());
             }
             else
             {
@@ -54,6 +62,8 @@ namespace NetworkRouting
 
         private static DijkstraResult dijkstra(int startingIndex, List<PointF> points, List<HashSet<int>> connections, PriorityQueueFactory.QueueType type)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
             List<int> prev = new List<int>();
             List<double> dist = new List<double>();
             foreach (PointF point in points)
@@ -77,7 +87,8 @@ namespace NetworkRouting
                     }
                 }
             }
-            return new DijkstraResult(prev, dist);
+            stopwatch.Stop();
+            return new DijkstraResult(prev, dist, stopwatch.Elapsed.TotalSeconds);
         }
         private static double distanceBetweenPoints(PointF point1, PointF point2)
         {
@@ -88,11 +99,13 @@ namespace NetworkRouting
         {
             private List<double> dist;
             private List<int> prev;
+            private double time;
 
-            public DijkstraResult(List<int> prev, List<double> dist)
+            public DijkstraResult(List<int> prev, List<double> dist, double time)
             {
                 this.prev = prev;
                 this.dist = dist;
+                this.time = time;
             }
 
             internal List<double> getDist()
@@ -103,6 +116,11 @@ namespace NetworkRouting
             internal List<int> getPrev()
             {
                 return prev;
+            }
+
+            internal double getTime()
+            {
+                return time;
             }
         }
 
