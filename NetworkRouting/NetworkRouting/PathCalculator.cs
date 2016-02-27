@@ -12,7 +12,7 @@ namespace NetworkRouting
 
         public static void findShortestByArray(TextBox cost, TextBox time,int startingIndex, List<PointF> points, List<HashSet<int>> connections, int stopIndex, Graphics graphics)
         {
-            DijkstraResult result = dijkstra(startingIndex, points, connections, PriorityQueueFactory.QueueType.Array);
+            DijkstraResult result = dijkstra(startingIndex, points, connections, PriorityQueueFactory.QueueType.Heap);
             List<int> prev = result.getPrev();
             List<double> dist = result.getDist();
             int currentIndex = stopIndex;
