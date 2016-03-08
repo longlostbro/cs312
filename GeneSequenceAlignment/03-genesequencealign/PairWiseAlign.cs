@@ -36,9 +36,12 @@ namespace GeneticsLab
 
 
             // ********* these are placeholder assignments that you'll replace with your code  *******
-            score = 0;                                                
-            alignment[0] = "";
-            alignment[1] = "";
+            string a = sequenceA.Sequence.Substring(0, sequenceA.Sequence.Length < MaxCharactersToAlign ? sequenceA.Sequence.Length : MaxCharactersToAlign);
+            string b = sequenceB.Sequence.Substring(0, sequenceB.Sequence.Length < MaxCharactersToAlign ? sequenceB.Sequence.Length : MaxCharactersToAlign);
+            DynamicProgramming dp = new DynamicProgramming(a, b, banded);
+            score = dp.getScore();                                                
+            alignment[0] = dp.getResultA();
+            alignment[1] = dp.getResultB();
             // ***************************************************************************************
             
 

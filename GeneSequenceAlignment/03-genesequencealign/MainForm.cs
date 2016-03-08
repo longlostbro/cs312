@@ -13,6 +13,7 @@ namespace GeneticsLab
 {
     public partial class MainForm : Form
     {
+        public static DataGridView dataGridView;
         ResultTable m_resultTable;
         GeneSequence[] m_sequences;
         public const int NUMBER_OF_SEQUENCES = 10;
@@ -186,6 +187,43 @@ namespace GeneticsLab
             sequence2Box.Text = "";
             file2Box.Text = "";
             Refresh();
+        }
+
+        private void getGridButton_Click(object sender, EventArgs e)
+        {
+            DynamicProgramming problem = DynamicProgramming.problems[int.Parse(getGridTextbox.Text)];
+            int[][] cells = problem.getCells();
+            Form form = new Form();
+
+            DataGridView view = new DataGridView();
+            view.ColumnCount = cells[0].Length;
+            for (int rowIndex = 0; rowIndex < cells.Length; ++rowIndex)
+            {
+                var row = new DataGridViewRow();
+
+                for (int columnIndex = 0; columnIndex < cells[0].Length; ++columnIndex)
+                {
+                    row.Cells.Add(new DataGridViewTextBoxCell()
+                    {
+                        Value = cells[rowIndex][columnIndex]
+                    });
+                }
+
+                view.Rows.Add(row);
+            }
+            string a = problem.getStringA();
+            string b = problem.getStringB();
+            for (int i = 0; i < b.Length; i++)
+            {
+                view.Columns[i + 1].HeaderText = "" + b[i];
+            }
+            for (int i = 0; i < a.Length; i++)
+            {
+                view.Rows[i+1].HeaderCell.Value = "" + a[i];
+            }
+            view.Dock = DockStyle.Fill;
+            form.Controls.Add(view);
+            form.ShowDialog();
         }
     }
 }
