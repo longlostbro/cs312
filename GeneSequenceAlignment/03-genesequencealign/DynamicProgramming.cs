@@ -8,7 +8,7 @@ namespace GeneticsLab
 {
     class DynamicProgramming
     {
-        public static List<DynamicProgramming> problems = new List<DynamicProgramming>();
+        public static Dictionary<Tuple<int,int>,DynamicProgramming> problems = new Dictionary<Tuple<int,int>,DynamicProgramming>();
         private int indel_cost = 5;
         private int match_cost = -3;
         private int substitute_cost = 1;
@@ -19,7 +19,7 @@ namespace GeneticsLab
         private direction[][] previous;
         private enum direction{ none, upleft, up, left };
 
-        public DynamicProgramming(string a, string b, bool banded)
+        public DynamicProgramming(Tuple<int,int> cell, string a, string b, bool banded)
         {
             this.a = a;
             this.b = b;
@@ -51,7 +51,7 @@ namespace GeneticsLab
             previous[0][0] = direction.none;
             unbanded();
             getPrevious(cells.Length - 1, cells[cells.Length-1].Length - 1);
-            problems.Add(this);
+            problems.Add(cell,this);
         }
 
         public string getStringA()

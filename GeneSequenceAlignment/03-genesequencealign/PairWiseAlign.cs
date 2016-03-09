@@ -28,7 +28,7 @@ namespace GeneticsLab
         /// <param name="banded">true if alignment should be band limited.</param>
         /// <returns>the alignment score and the alignment (in a Result object) for sequenceA and sequenceB.  The calling function places the result in the dispay appropriately.
         /// 
-        public ResultTable.Result Align_And_Extract(GeneSequence sequenceA, GeneSequence sequenceB, bool banded)
+        public ResultTable.Result Align_And_Extract(Tuple<int,int> cell, GeneSequence sequenceA, GeneSequence sequenceB, bool banded)
         {
             ResultTable.Result result = new ResultTable.Result();
             int score;                                                       // place your computed alignment score here
@@ -38,7 +38,7 @@ namespace GeneticsLab
             // ********* these are placeholder assignments that you'll replace with your code  *******
             string a = sequenceA.Sequence.Substring(0, sequenceA.Sequence.Length < MaxCharactersToAlign ? sequenceA.Sequence.Length : MaxCharactersToAlign);
             string b = sequenceB.Sequence.Substring(0, sequenceB.Sequence.Length < MaxCharactersToAlign ? sequenceB.Sequence.Length : MaxCharactersToAlign);
-            DynamicProgramming dp = new DynamicProgramming(a, b, banded);
+            DynamicProgramming dp = new DynamicProgramming(cell, a, b, banded);
             score = dp.getScore();                                                
             alignment[0] = dp.getResultA();
             alignment[1] = dp.getResultB();

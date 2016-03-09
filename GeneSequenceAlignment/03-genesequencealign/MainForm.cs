@@ -13,7 +13,6 @@ namespace GeneticsLab
 {
     public partial class MainForm : Form
     {
-        public static DataGridView dataGridView;
         ResultTable m_resultTable;
         GeneSequence[] m_sequences;
         public const int NUMBER_OF_SEQUENCES = 10;
@@ -111,16 +110,17 @@ namespace GeneticsLab
             {
                 for (int y = x; y < NUMBER_OF_SEQUENCES; ++y)
                 {
-                    result = processor.Align_And_Extract(m_sequences[x], m_sequences[y], bandCheckBox.Checked);                 // ********* hook to the student's code
+                    result = processor.Align_And_Extract(new Tuple<int,int>(x,y),m_sequences[x], m_sequences[y], bandCheckBox.Checked);                 // ********* hook to the student's code
                     m_resultTable.AddResult(x,y,result);
                     m_resultTable.DisplayResult(x, y);
                 }
             }
         }
-
+        private Tuple<int, int> selectedCell = new Tuple<int, int>(0,0);
         private void cell_Click(object sender, DataGridViewCellEventArgs e)
         {
-        // added this handler to display results in new textboxes when a cell is clicked in the results table
+            selectedCell = new Tuple<int, int>(e.RowIndex, e.ColumnIndex);
+            // added this handler to display results in new textboxes when a cell is clicked in the results table
             string seq1, seq2;
 
             string sequence;
@@ -191,7 +191,8 @@ namespace GeneticsLab
 
         private void getGridButton_Click(object sender, EventArgs e)
         {
-            DynamicProgramming problem = DynamicProgramming.problems[int.Parse(getGridTextbox.Text)];
+            DynamicProgramming problem;
+            DynamicProgramming.problems.TryGetValue(selectedCell,out problem);
             int[][] cells = problem.getCells();
             Form form = new Form();
 

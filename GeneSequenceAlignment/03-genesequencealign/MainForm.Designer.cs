@@ -47,7 +47,6 @@ namespace GeneticsLab
             this.processButton = new System.Windows.Forms.ToolStripButton();
             this.clearButton = new System.Windows.Forms.ToolStripButton();
             this.getGridButton = new System.Windows.Forms.Button();
-            this.getGridTextbox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewResults)).BeginInit();
             this.statusStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -238,25 +237,17 @@ namespace GeneticsLab
             // 
             this.getGridButton.Location = new System.Drawing.Point(840, 259);
             this.getGridButton.Name = "getGridButton";
-            this.getGridButton.Size = new System.Drawing.Size(75, 23);
+            this.getGridButton.Size = new System.Drawing.Size(164, 23);
             this.getGridButton.TabIndex = 12;
-            this.getGridButton.Text = "Get Grid:";
+            this.getGridButton.Text = "Get Selected Grid";
             this.getGridButton.UseVisualStyleBackColor = true;
             this.getGridButton.Click += new System.EventHandler(this.getGridButton_Click);
-            // 
-            // getGridTextbox
-            // 
-            this.getGridTextbox.Location = new System.Drawing.Point(921, 260);
-            this.getGridTextbox.Name = "getGridTextbox";
-            this.getGridTextbox.Size = new System.Drawing.Size(100, 22);
-            this.getGridTextbox.TabIndex = 13;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1172, 635);
-            this.Controls.Add(this.getGridTextbox);
             this.Controls.Add(this.getGridButton);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label6);
@@ -309,7 +300,6 @@ namespace GeneticsLab
         private System.Windows.Forms.CheckBox bandCheckBox;
         private System.Windows.Forms.TextBox bandlengthBox;
         private System.Windows.Forms.Button getGridButton;
-        private System.Windows.Forms.TextBox getGridTextbox;
     }
 }
 
