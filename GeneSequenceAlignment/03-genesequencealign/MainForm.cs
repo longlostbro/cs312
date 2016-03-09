@@ -165,7 +165,6 @@ namespace GeneticsLab
             }
             file2Box.Text = m_sequences[e.ColumnIndex].Name;
         }
-
         private void processButton_Click(object sender, EventArgs e)
         {
             statusMessage.Text = "Processing...";
@@ -186,45 +185,52 @@ namespace GeneticsLab
             sequence1Box.Text = "";
             sequence2Box.Text = "";
             file2Box.Text = "";
+            DynamicProgramming.problems.Clear();
             Refresh();
         }
 
         private void getGridButton_Click(object sender, EventArgs e)
         {
-            DynamicProgramming problem;
-            DynamicProgramming.problems.TryGetValue(selectedCell,out problem);
-            int[][] cells = problem.getCells();
-            Form form = new Form();
+            try {
+                DynamicProgramming problem;
+                DynamicProgramming.problems.TryGetValue(selectedCell, out problem);
+                int[][] cells = problem.getCells();
+                Form form = new Form();
 
-            DataGridView view = new DataGridView();
-            view.ColumnCount = cells[0].Length;
-            for (int rowIndex = 0; rowIndex < cells.Length; ++rowIndex)
-            {
-                var row = new DataGridViewRow();
-
-                for (int columnIndex = 0; columnIndex < cells[0].Length; ++columnIndex)
+                DataGridView view = new DataGridView();
+                view.ColumnCount = cells[0].Length;
+                for (int rowIndex = 0; rowIndex < cells.Length; ++rowIndex)
                 {
-                    row.Cells.Add(new DataGridViewTextBoxCell()
-                    {
-                        Value = cells[rowIndex][columnIndex]
-                    });
-                }
+                    var row = new DataGridViewRow();
 
-                view.Rows.Add(row);
+                    for (int columnIndex = 0; columnIndex < cells[0].Length; ++columnIndex)
+                    {
+                        row.Cells.Add(new DataGridViewTextBoxCell()
+                        {
+                            Value = cells[rowIndex][columnIndex]
+                        });
+                    }
+
+                    view.Rows.Add(row);
+                }
+                string a = problem.getStringA();
+                string b = problem.getStringB();
+                for (int i = 0; i < b.Length; i++)
+                {
+                    view.Columns[i + 1].HeaderText = "" + b[i];
+                }
+                for (int i = 0; i < a.Length; i++)
+                {
+                    view.Rows[i + 1].HeaderCell.Value = "" + a[i];
+                }
+                view.Dock = DockStyle.Fill;
+                form.Controls.Add(view);
+                form.ShowDialog();
             }
-            string a = problem.getStringA();
-            string b = problem.getStringB();
-            for (int i = 0; i < b.Length; i++)
+            catch(Exception ex)
             {
-                view.Columns[i + 1].HeaderText = "" + b[i];
+
             }
-            for (int i = 0; i < a.Length; i++)
-            {
-                view.Rows[i+1].HeaderCell.Value = "" + a[i];
-            }
-            view.Dock = DockStyle.Fill;
-            form.Controls.Add(view);
-            form.ShowDialog();
         }
     }
 }
