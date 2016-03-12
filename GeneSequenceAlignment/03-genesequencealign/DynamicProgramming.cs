@@ -8,7 +8,8 @@ namespace GeneticsLab
 {
     class DynamicProgramming
     {
-        public static Dictionary<Tuple<int,int>,DynamicProgramming> problems = new Dictionary<Tuple<int,int>,DynamicProgramming>();
+        public static Dictionary<Tuple<int,int>,DynamicProgramming> problems = 
+            new Dictionary<Tuple<int,int>,DynamicProgramming>();
         private int indel_cost = 5;
         private int match_cost = -3;
         private int substitute_cost = 1;
@@ -60,11 +61,12 @@ namespace GeneticsLab
             previous[0][0] = direction.none;
             fillTable();
             findPath();
-            problems.Add(cell,this);
+            //problems.Add(cell,this);
         }
 
         string resultA = "";
         string resultB = "";
+        //O(m+n) worst case if no matches or substitutes are performed
         private void findPath()
         {
             direction last = direction.left;
@@ -73,6 +75,7 @@ namespace GeneticsLab
             resultA = "";
             resultB = "";
             last = previous[currentRow][currentColumn];
+            //O(m+n) worst case if no matches or substitutes are performed
             while (last != direction.none)
             {
                 switch (last)
@@ -121,16 +124,22 @@ namespace GeneticsLab
         {
             return resultB;
         }
-
+        
+        //O(m*n) or O(m+n) if banded  O(m*n) space because it's an m by n table
         public void fillTable()
         {
             //fill in the table
             int currentRow = 1;
             int currentColumn = 1;
+            //O(m*n) or O(m+n) if banded
             while (currentRow != cells.Length && currentColumn != cells[cells.Length-1].Length)
             {
+                //O(1)
                 setMinCost(currentRow, currentColumn);
-                if(cells[currentRow-1][currentColumn] == Int32.MaxValue || currentColumn == cells[currentRow].Length-1)
+                //this check makes it O(m+n) if banded because it skips those past the banded length by 
+                //incrementing the row
+                if(cells[currentRow-1][currentColumn] == Int32.MaxValue || 
+                    currentColumn == cells[currentRow].Length-1)
                 {
                     currentRow++;
                     if (banded)
@@ -144,28 +153,31 @@ namespace GeneticsLab
                 }
             }
         }
-
+        //O(1)
         private void setMinCost(int row, int col)
         {
             int up=findDeleteCost(row,col);
             int left=findInsertCost(row,col);
             int upleft=findMatchCost(row,col);
             cells[row][col] = (left < upleft && left < up) ? left : (upleft < up ? upleft : up);
-            previous[row][col] = (left < upleft && left < up) ? direction.left : (upleft < up ? direction.upleft : direction.up);
+            previous[row][col] = (left < upleft && left < up) ? direction.left : 
+                (upleft < up ? direction.upleft : direction.up);
         }
-
+        //O(1)
         private int findDeleteCost(int row, int column)
         {
             if (row > 0 && cells[row-1][column] != Int32.MaxValue)
                 return cells[row - 1][column] + indel_cost;
             return Int32.MaxValue;
         }
+        //O(1)
         private int findInsertCost(int row, int column)
         {
             if(column > 0 && cells[row][column-1] != Int32.MaxValue)
                 return cells[row][column-1]+indel_cost;
             return Int32.MaxValue;
         }
+        //O(1)
         private int findMatchCost(int row, int column)
         {
             if(row > 0 && column > 0)
