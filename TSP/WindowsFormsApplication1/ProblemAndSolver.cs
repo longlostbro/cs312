@@ -409,7 +409,7 @@ namespace TSP
             //BBState state = new BBState(matrix, new List<int>() { 0 }, new List<int>() { 1, 2, 3 }, 0);
             states.Add(state);
             int count = 0;
-            while (states.Count > 0 && timer.ElapsedMilliseconds < 60000)
+            while (states.Count > 0 && timer.ElapsedMilliseconds < (long)60000)
             {
                 state = states.Min;
                 states.Remove(state);
@@ -424,7 +424,7 @@ namespace TSP
                         List<BBState> removable = new List<BBState>();
                         foreach(BBState st in states)
                         {
-                            if (st.cost > bssf)
+                            if (st.cost >= bssf)
                                 removable.Add(st);
                         }
                         foreach(BBState st in removable)
@@ -438,8 +438,12 @@ namespace TSP
             BBState.generatedCount += states.Count;
 
             timer.Stop();
-
-            this.bssf.Route.Add(new TSPSolution(new ArrayList(state.getPath().ToArray())));
+            Route = new ArrayList();
+            foreach(int index in state.getPath())
+            {
+                Route.Add(Cities[index]);
+            }
+            this.bssf= new TSPSolution(Route);
             results[COST] = String.Format("{0}",bssf);    // load results into array here, replacing these dummy values
             results[TIME] = String.Format("{0}",timer.ElapsedMilliseconds/1000.00);
             results[COUNT] = String.Format("{0}",count);
@@ -486,10 +490,14 @@ namespace TSP
     {
         public int Compare(BBState x, BBState y)
         {
-            if(x.Equals(y))
+            if (x.Equals(y))
+            {
                 return 0;
+            }
             else if (x.getCost() > y.getCost())
+            {
                 return 1;
+            }
             return -1;
         }
     }

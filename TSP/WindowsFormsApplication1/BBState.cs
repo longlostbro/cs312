@@ -9,7 +9,6 @@ namespace TSP
 
     public class BBState
     {
-        public static List<System.Collections.Generic.KeyValuePair<int, int>> order = new List<System.Collections.Generic.KeyValuePair<int, int>>();
         public List<int> citiesLeft;
         public double cost;
         public double[][] matrix;
@@ -20,8 +19,6 @@ namespace TSP
 
         public BBState(double[][] matrix, List<int> path, List<int> citiesLeft, double initialCost)
         {
-            if (path.Count > 1)
-                order.Add(new KeyValuePair<int, int>(path.ElementAt(path.Count - 2), path.ElementAt(path.Count - 1)));
             this.path = path;
             this.matrix = matrix;
             this.cost = initialCost + reduce();
