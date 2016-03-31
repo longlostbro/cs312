@@ -382,23 +382,29 @@ namespace TSP
             double bssf = Double.PositiveInfinity;
 
             // TODO: Add your implementation for a branch and bound solver here.
-            List<int> citiesLeft = new List<int>();
-            double[][] matrix = new double[Cities.Length][];
-            for (int i = 0; i < Cities.Length; i++)
-            {
-                citiesLeft.Add(i);
-                matrix[i] = new double[Cities.Length];
-                for (int j = 0; j < Cities.Length; j++)
-                {
-                    if (i != j)
-                        matrix[i][j] = Cities[i].costToGetTo(Cities[j]);
-                    else
-                        matrix[i][j] = Double.PositiveInfinity;
+            //List<int> citiesLeft = new List<int>();
+            //double[][] matrix = new double[Cities.Length][];
+            //for (int i = 0; i < Cities.Length; i++)
+            //{
+            //    citiesLeft.Add(i);
+            //    matrix[i] = new double[Cities.Length];
+            //    for (int j = 0; j < Cities.Length; j++)
+            //    {
+            //        if (i != j)
+            //            matrix[i][j] = Cities[i].costToGetTo(Cities[j]);
+            //        else
+            //            matrix[i][j] = Double.PositiveInfinity;
 
-                }
-            }
-            citiesLeft.RemoveAt(0);
-            BBState state = new BBState(matrix, new List<int>() { 0 }, citiesLeft,0);
+            //    }
+            //}
+            //citiesLeft.RemoveAt(0);
+            double[][] matrix = new double[4][];
+            matrix[0] = new double[4] { Double.PositiveInfinity, 7, 3, 12 };
+            matrix[1] = new double[4] { 3, Double.PositiveInfinity, 6, 14 };
+            matrix[2] = new double[4] { 5, 8, Double.PositiveInfinity, 6 };
+            matrix[3] = new double[4] { 9, 3, 5, Double.PositiveInfinity };
+            BBState state = new BBState(matrix, new List<int>() { 0 }, new List<int>() { 1,2,3 },0);
+            //BBState state = new BBState(matrix, new List<int>() { 0 }, citiesLeft,0);
             PriorityQueue.getInstance().insert(state);
 
             BBState current;

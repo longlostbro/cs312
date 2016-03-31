@@ -62,7 +62,6 @@ namespace TSP
         public BBState deletemin()
         {
             int node = pointers[0];
-            BBState state = states.ElementAt(node);
             pointers[0] = pointers[lastIndex];
             pointers[lastIndex] = node;
             cost[0] = cost[lastIndex];
@@ -70,6 +69,7 @@ namespace TSP
             //this make it O(log(|v|))
             HeapifyDown(0);
             lastIndex--;
+            BBState state = states.ElementAt(node);
             return state;
             //return node;
         }
