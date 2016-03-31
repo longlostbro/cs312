@@ -375,14 +375,18 @@ namespace TSP
         /// stops when time limit expires and uses BSSF as solution
         /// </summary>
         /// <returns>results array for GUI that contains three ints: cost of solution, time spent to find solution, number of solutions found during search (not counting initial BSSF estimate)</returns>
+
         public string[] bBSolveProblem()
         {
             string[] results = new string[3];
+            double bssf = Double.PositiveInfinity;
 
             // TODO: Add your implementation for a branch and bound solver here.
+            List<int> citiesLeft = new List<int>();
             double[][] matrix = new double[Cities.Length][];
             for (int i = 0; i < Cities.Length; i++)
             {
+                citiesLeft.Add(i);
                 matrix[i] = new double[Cities.Length];
                 for (int j = 0; j < Cities.Length; j++)
                 {
@@ -393,7 +397,24 @@ namespace TSP
 
                 }
             }
-            BBState state = new BBState(matrix, new List<int>() { 1 },0);
+            citiesLeft.RemoveAt(0);
+            BBState state = new BBState(matrix, new List<int>() { 0 }, citiesLeft,0);
+            PriorityQueue.getInstance().insert(state);
+
+            BBState current;
+            while (!PriorityQueue.getInstance().isEmpty())
+            {
+                 current = PriorityQueue.getInstance().deletemin();
+                if(state.extend())
+                {
+                    if(current.getCost() < bssf)
+                    {
+                        bssf = current.getCost();
+                        PriorityQueue.getInstance().trim(bssf);
+                    }
+
+                }
+            }
 
 
             results[COST] = "not implemented";    // load results into array here, replacing these dummy values
