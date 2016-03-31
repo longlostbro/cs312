@@ -95,7 +95,7 @@ namespace TSP
         /// <summary>
         /// best solution so far. 
         /// </summary>
-        private TSPSolution bssf; 
+        private TSPSolution bssf;
 
         /// <summary>
         /// how to color various things. 
@@ -137,10 +137,10 @@ namespace TSP
         /// <summary>
         /// These three constants are used for convenience/clarity in populating and accessing the results array that is passed back to the calling Form
         /// </summary>
-        public const int COST = 0;           
+        public const int COST = 0;
         public const int TIME = 1;
         public const int COUNT = 2;
-        
+
         public int Size
         {
             get { return _size; }
@@ -155,7 +155,7 @@ namespace TSP
         #region Constructors
         public ProblemAndSolver()
         {
-            this._seed = 1; 
+            this._seed = 1;
             rnd = new Random(1);
             this._size = DEFAULT_SIZE;
             this.time_limit = TIME_LIMIT * 1000;                  // TIME_LIMIT is in seconds, but timer wants it in milliseconds
@@ -187,7 +187,7 @@ namespace TSP
             this._seed = seed;
             this._size = size;
             rnd = new Random(seed);
-            this.time_limit = time*1000;                        // time is entered in the GUI in seconds, but timer wants it in milliseconds
+            this.time_limit = time * 1000;                        // time is entered in the GUI in seconds, but timer wants it in milliseconds
 
             this.resetData();
         }
@@ -226,7 +226,7 @@ namespace TSP
 
             cityBrushStyle = new SolidBrush(Color.Black);
             cityBrushStartStyle = new SolidBrush(Color.Red);
-            routePenStyle = new Pen(Color.Blue,1);
+            routePenStyle = new Pen(Color.Blue, 1);
             routePenStyle.DashStyle = System.Drawing.Drawing2D.DashStyle.Solid;
         }
 
@@ -253,7 +253,7 @@ namespace TSP
         {
             this._size = size;
             this._mode = mode;
-            this.time_limit = timelimit*1000;                                   //convert seconds to milliseconds
+            this.time_limit = timelimit * 1000;                                   //convert seconds to milliseconds
             resetData();
         }
 
@@ -275,8 +275,8 @@ namespace TSP
         /// <param name="g">where to draw the stuff</param>
         public void Draw(Graphics g)
         {
-            float width  = g.VisibleClipBounds.Width-45F;
-            float height = g.VisibleClipBounds.Height-45F;
+            float width = g.VisibleClipBounds.Width - 45F;
+            float height = g.VisibleClipBounds.Height - 45F;
             Font labelFont = new Font("Arial", 10);
 
             // Draw lines
@@ -287,10 +287,10 @@ namespace TSP
                 int index = 0;
                 foreach (City c in bssf.Route)
                 {
-                    if (index < bssf.Route.Count -1)
-                        g.DrawString(" " + index +"("+c.costToGetTo(bssf.Route[index+1]as City)+")", labelFont, cityBrushStartStyle, new PointF((float)c.X * width + 3F, (float)c.Y * height));
-                    else 
-                        g.DrawString(" " + index +"("+c.costToGetTo(bssf.Route[0]as City)+")", labelFont, cityBrushStartStyle, new PointF((float)c.X * width + 3F, (float)c.Y * height));
+                    if (index < bssf.Route.Count - 1)
+                        g.DrawString(" " + index + "(" + c.costToGetTo(bssf.Route[index + 1] as City) + ")", labelFont, cityBrushStartStyle, new PointF((float)c.X * width + 3F, (float)c.Y * height));
+                    else
+                        g.DrawString(" " + index + "(" + c.costToGetTo(bssf.Route[0] as City) + ")", labelFont, cityBrushStartStyle, new PointF((float)c.X * width + 3F, (float)c.Y * height));
                     ps[index++] = new Point((int)(c.X * width) + CITY_ICON_SIZE / 2, (int)(c.Y * height) + CITY_ICON_SIZE / 2);
                 }
 
@@ -316,12 +316,12 @@ namespace TSP
         ///  return the cost of the best solution so far. 
         /// </summary>
         /// <returns></returns>
-        public double costOfBssf ()
+        public double costOfBssf()
         {
             if (bssf != null)
                 return (bssf.costOfRoute());
             else
-                return -1D; 
+                return -1D;
         }
 
         /// <summary>
@@ -331,7 +331,7 @@ namespace TSP
         /// <returns>results array for GUI that contains three ints: cost of solution, time spent to find solution, number of solutions found during search (not counting initial BSSF estimate)</returns>
         public string[] defaultSolveProblem()
         {
-            int i, swap, temp, count=0;
+            int i, swap, temp, count = 0;
             string[] results = new string[3];
             int[] perm = new int[Cities.Length];
             Route = new ArrayList();
@@ -379,7 +379,10 @@ namespace TSP
         public string[] bBSolveProblem()
         {
             string[] results = new string[3];
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
             double bssf = Double.PositiveInfinity;
+            SortedSet<BBState> states = new SortedSet<BBState>(new BBStateComparer());
 
             // TODO: Add your implementation for a branch and bound solver here.
             List<int> citiesLeft = new List<int>();
@@ -398,28 +401,44 @@ namespace TSP
                 }
             }
             citiesLeft.RemoveAt(0);
-            BBState state = new BBState(matrix, new List<int>() { 0 }, citiesLeft,0);
-            PriorityQueue.getInstance().insert(state);
-
-            BBState current;
-            while (!PriorityQueue.getInstance().isEmpty())
+            BBState state = new BBState(matrix, new List<int>() { 0 }, citiesLeft, 0);
+            //double[][] matrix = new double[4][];
+            //matrix[0] = new double[4] { Double.PositiveInfinity, 7, 3, 12 };
+            //matrix[1] = new double[4] { 3, Double.PositiveInfinity, 6, 14 };
+            //matrix[2] = new double[4] { 5, 8, Double.PositiveInfinity, 6 };
+            //matrix[3] = new double[4] { 9, 3, 5, Double.PositiveInfinity };
+            //BBState state = new BBState(matrix, new List<int>() { 0 }, new List<int>() { 1, 2, 3 }, 0);
+            states.Add(state);
+            int count = 0;
+            while (states.Count > 0)
             {
-                 current = PriorityQueue.getInstance().deletemin();
-                if(state.extend())
+                state = states.Min;
+                states.Remove(state);
+                if (state.extend(states, bssf))
                 {
-                    if(current.getCost() < bssf)
+                    if (state.cost < bssf)
                     {
-                        bssf = current.getCost();
-                        PriorityQueue.getInstance().trim(bssf);
+                        bssf = state.cost;
+                        count++;
+                        List<BBState> removable = new List<BBState>();
+                        foreach(BBState st in states)
+                        {
+                            if (st.cost > bssf)
+                                removable.Add(st);
+                        }
+                        foreach(BBState st in removable)
+                        {
+                            states.Remove(st);
+                        }
                     }
 
                 }
             }
 
-
-            results[COST] = "not implemented";    // load results into array here, replacing these dummy values
-            results[TIME] = "-1";
-            results[COUNT] = "-1";
+            timer.Stop();
+            results[COST] = String.Format("{0}",bssf);    // load results into array here, replacing these dummy values
+            results[TIME] = String.Format("{0}",timer.ElapsedMilliseconds/1000.00);
+            results[COUNT] = String.Format("{0}",count);
 
             return results;
         }
@@ -458,6 +477,17 @@ namespace TSP
             return results;
         }
         #endregion
+    }
+    public class BBStateComparer : IComparer<BBState>
+    {
+        public int Compare(BBState x, BBState y)
+        {
+            if(x.Equals(y))
+                return 0;
+            else if (x.getCost() > y.getCost())
+                return 1;
+            return -1;
+        }
     }
 
 }

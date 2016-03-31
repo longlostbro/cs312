@@ -6,36 +6,44 @@ using System.Threading.Tasks;
 
 namespace TSP
 {
+
     public class BBState
     {
-        private List<int> citiesLeft;
-        double cost;
-        double[][] matrix;
-        List<int> path;
+        public static List<System.Collections.Generic.KeyValuePair<int, int>> order = new List<System.Collections.Generic.KeyValuePair<int, int>>();
+        public List<int> citiesLeft;
+        public double cost;
+        public double[][] matrix;
+        public List<int> path;
 
-        public BBState(double[][] matrix, List<int> path, List<int> citiesLeft, double cost)
+        public BBState(double[][] matrix, List<int> path, List<int> citiesLeft, double initialCost)
         {
+            if (path.Count > 1)
+                order.Add(new KeyValuePair<int, int>(path.ElementAt(path.Count - 2), path.ElementAt(path.Count - 1)));
             this.path = path;
             this.matrix = matrix;
-            this.cost = cost + reduce();
+            this.cost = initialCost + reduce();
             this.citiesLeft = citiesLeft;
         }
 
         public double reduce()
         {
-            double cost = 0;
-            for(int i = 0; i < matrix.Length; i++)
+            double rowReductionCost = 0;
+            for (int i = 0; i < matrix.Length; i++)
             {
                 if (!matrix[i].Contains(0))
                 {
                     double min = matrix[i].Min();
-                    cost += min;
-                    for (int j = 0; j < matrix.Length; j++)
+                    if (min != Double.PositiveInfinity)
                     {
-                        matrix[i][j] = matrix[i][j]- min;
+                        rowReductionCost += min;
+                        for (int j = 0; j < matrix.Length; j++)
+                        {
+                            matrix[i][j] = matrix[i][j] - min;
+                        }
                     }
                 }
             }
+            double columnReductionCost = 0;
             for (int i = 0; i < matrix.Length; i++)
             {
                 double min = Double.PositiveInfinity;
@@ -43,9 +51,9 @@ namespace TSP
                 {
                     min = min > matrix[j][i] ? matrix[j][i] : min;
                 }
-                if (min != 0)
+                if (min != Double.PositiveInfinity && min != 0)
                 {
-                    cost += min;
+                    columnReductionCost += min;
                     for (int j = 0; j < matrix.Length; j++)
                     {
                         matrix[j][i] = matrix[j][i] - min;
@@ -53,7 +61,7 @@ namespace TSP
                     }
                 }
             }
-            return cost;
+            return rowReductionCost + columnReductionCost;
         }
 
         public double getCost()
@@ -61,20 +69,28 @@ namespace TSP
             return cost;
         }
 
-        public bool extend()
+        public bool extend(SortedSet<BBState> states, double bssf)
         {
-            if (citiesLeft.Count != 0)
+            if (citiesLeft.Count() != 0)
             {
                 foreach (int i in citiesLeft)
                 {
-                    double[][] newMatrix = this.matrix.Select(a => a.ToArray()).ToArray();
-                    double initialCost = newMatrix[path.Last()][i] + cost;
-                    List<int> newPath = path.Select(a => a).ToList();
-                    newPath.Add(i);
-                    List<int> newCitiesLeft = citiesLeft.Select(a => a).ToList();
-                    newCitiesLeft.Remove(i);
-                    BBState state = new BBState(newMatrix, newPath, newCitiesLeft, initialCost);
-                    PriorityQueue.getInstance().insert(state);
+                    double initialCost = matrix[path.Last()][i] + cost;
+                    if (initialCost < bssf)
+                    {
+                        double[][] newMatrix = this.matrix.Select(a => a.ToArray()).ToArray();
+                        for (int j = 0; j < matrix.Count(); j++)
+                        {
+                            newMatrix[path.Last()][j] = Double.PositiveInfinity;
+                            newMatrix[j][i] = Double.PositiveInfinity;
+                        }
+                        List<int> newPath = path.Select(a => a).ToList();
+                        newPath.Add(i);
+                        List<int> newCitiesLeft = citiesLeft.Select(a => a).ToList();
+                        newCitiesLeft.Remove(i);
+                        BBState state = new BBState(newMatrix, newPath, newCitiesLeft, initialCost);
+                        states.Add(state);
+                    }
                 }
                 return false;
             }
@@ -84,6 +100,39 @@ namespace TSP
                 path.Add(0);
                 return true;
             }
+        }
+        
+        public List<int> getPath()
+        {
+            return path;
+        }
+
+        public override bool Equals(System.Object obj)
+        {
+            // If parameter is null return false.
+            if (obj == null)
+            {
+                return false;
+            }
+
+            // If parameter cannot be cast to Point return false.
+            BBState p = obj as BBState;
+            if ((System.Object)p == null)
+            {
+                return false;
+            }
+
+            if(cost == p.cost)
+            {
+                if(this.path == p.path)
+                {
+                    if(this.matrix == p.matrix)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
     }
 }
