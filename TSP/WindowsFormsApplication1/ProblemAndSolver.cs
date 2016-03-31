@@ -383,7 +383,6 @@ namespace TSP
             timer.Start();
             double bssf = Double.PositiveInfinity;
             SortedSet<BBState> states = new SortedSet<BBState>(new BBStateComparer());
-
             // TODO: Add your implementation for a branch and bound solver here.
             List<int> citiesLeft = new List<int>();
             double[][] matrix = new double[Cities.Length][];
@@ -410,11 +409,13 @@ namespace TSP
             //BBState state = new BBState(matrix, new List<int>() { 0 }, new List<int>() { 1, 2, 3 }, 0);
             states.Add(state);
             int count = 0;
-            while (states.Count > 0)
+            while (states.Count > 0 && timer.ElapsedMilliseconds < 60000)
             {
                 state = states.Min;
                 states.Remove(state);
-                if (state.extend(states, bssf))
+                bool done = state.extend(states, bssf);
+                BBState.maxStateCount = BBState.maxStateCount < states.Count ? states.Count : BBState.maxStateCount;
+                if (done)
                 {
                     if (state.cost < bssf)
                     {
@@ -429,13 +430,16 @@ namespace TSP
                         foreach(BBState st in removable)
                         {
                             states.Remove(st);
+                            BBState.prunedCount++;
                         }
                     }
-
                 }
             }
+            BBState.generatedCount += states.Count;
 
             timer.Stop();
+
+            this.bssf.Route.Add(new TSPSolution(new ArrayList(state.getPath().ToArray())));
             results[COST] = String.Format("{0}",bssf);    // load results into array here, replacing these dummy values
             results[TIME] = String.Format("{0}",timer.ElapsedMilliseconds/1000.00);
             results[COUNT] = String.Format("{0}",count);

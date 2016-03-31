@@ -14,6 +14,9 @@ namespace TSP
         public double cost;
         public double[][] matrix;
         public List<int> path;
+        public static int prunedCount=0;
+        public static int generatedCount=0;
+        public static int maxStateCount = 0;
 
         public BBState(double[][] matrix, List<int> path, List<int> citiesLeft, double initialCost)
         {
@@ -75,6 +78,7 @@ namespace TSP
             {
                 foreach (int i in citiesLeft)
                 {
+                    generatedCount++;
                     double initialCost = matrix[path.Last()][i] + cost;
                     if (initialCost < bssf)
                     {
@@ -90,6 +94,10 @@ namespace TSP
                         newCitiesLeft.Remove(i);
                         BBState state = new BBState(newMatrix, newPath, newCitiesLeft, initialCost);
                         states.Add(state);
+                    }
+                    else
+                    {
+                        prunedCount++;
                     }
                 }
                 return false;
