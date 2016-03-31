@@ -381,10 +381,13 @@ namespace TSP
             string[] results = new string[3];
             Stopwatch timer = new Stopwatch();
             timer.Start();
-            double bssf = Double.PositiveInfinity;
             SortedSet<BBState> states = new SortedSet<BBState>(new BBStateComparer());
             // TODO: Add your implementation for a branch and bound solver here.
             List<int> citiesLeft = new List<int>();
+            double avgCount = 0;
+            double max = 0;
+            double secondMax = 0;
+            List<double> maxes = new List<double>();
             double[][] matrix = new double[Cities.Length][];
             for (int i = 0; i < Cities.Length; i++)
             {
@@ -396,10 +399,28 @@ namespace TSP
                         matrix[i][j] = Cities[i].costToGetTo(Cities[j]);
                     else
                         matrix[i][j] = Double.PositiveInfinity;
+                    if (matrix[i][j] != Double.PositiveInfinity)
+                    {
+                        if(max < Cities[i].costToGetTo(Cities[j]))
+                        {
+                            secondMax = max;
+                            max = Cities[i].costToGetTo(Cities[j]);
+                        }
+                    }
 
                 }
+                maxes.Add(secondMax + max);
             }
             citiesLeft.RemoveAt(0);
+            double result = 0;
+            foreach(int i in maxes)
+            {
+                result += i;
+            }
+            result = result / matrix.Length * 2;
+
+            //double bssf = Double.PositiveInfinity;
+            double bssf = result;
             BBState state = new BBState(matrix, new List<int>() { 0 }, citiesLeft, 0);
             //double[][] matrix = new double[4][];
             //matrix[0] = new double[4] { Double.PositiveInfinity, 7, 3, 12 };
@@ -409,7 +430,7 @@ namespace TSP
             //BBState state = new BBState(matrix, new List<int>() { 0 }, new List<int>() { 1, 2, 3 }, 0);
             states.Add(state);
             int count = 0;
-            while (states.Count > 0 && timer.ElapsedMilliseconds < (long)60000)
+            while (states.Count > 0 && timer.ElapsedMilliseconds < 60000)
             {
                 state = states.Min;
                 states.Remove(state);
