@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Drawing;
 using System.Diagnostics;
-
+using System.IO;
 
 namespace TSP
 {
@@ -378,16 +378,20 @@ namespace TSP
 
         public string[] bBSolveProblem()
         {
+            StreamWriter file = new StreamWriter("report.csv",true);
+            file.AutoFlush = true;
             string[] results = new string[3];
             Stopwatch timer = new Stopwatch();
             timer.Start();
+
+            //data structure used as priority queue with IComparer for the priority sort
             SortedSet<BBState> states = new SortedSet<BBState>(new BBStateComparer());
-            // TODO: Add your implementation for a branch and bound solver here.
-            List<int> citiesLeft = new List<int>();
-            double avgCount = 0;
             double max = 0;
             double secondMax = 0;
             List<double> maxes = new List<double>();
+
+            List<int> citiesLeft = new List<int>();
+            //initialization of first matrix O(n^2)
             double[][] matrix = new double[Cities.Length][];
             for (int i = 0; i < Cities.Length; i++)
             {
@@ -399,6 +403,7 @@ namespace TSP
                         matrix[i][j] = Cities[i].costToGetTo(Cities[j]);
                     else
                         matrix[i][j] = Double.PositiveInfinity;
+                    //calculate the first two max values of each row for use in calculating initial bssf
                     if (matrix[i][j] != Double.PositiveInfinity)
                     {
                         if(max < Cities[i].costToGetTo(Cities[j]))
@@ -409,39 +414,43 @@ namespace TSP
                     }
 
                 }
+                //calculate the first two max values of each row for use in calculating initial bssf
                 maxes.Add(secondMax + max);
             }
             citiesLeft.RemoveAt(0);
             double result = 0;
-            foreach(int i in maxes)
+            //calculate the first two max values of each row for use in calculating initial bssf O(n)
+            foreach (int i in maxes)
             {
                 result += i;
             }
+            //take the average of each set of two maxes and multiply it by two for the bssf, produces results in 3/4-1/2 the time reduction
             result = result / matrix.Length * 2;
-
-            //double bssf = Double.PositiveInfinity;
+            //set the initial bssf
             double bssf = result;
+            //Initial state created O(n^2) because it calls reduce
             BBState state = new BBState(matrix, new List<int>() { 0 }, citiesLeft, 0);
-            //double[][] matrix = new double[4][];
-            //matrix[0] = new double[4] { Double.PositiveInfinity, 7, 3, 12 };
-            //matrix[1] = new double[4] { 3, Double.PositiveInfinity, 6, 14 };
-            //matrix[2] = new double[4] { 5, 8, Double.PositiveInfinity, 6 };
-            //matrix[3] = new double[4] { 9, 3, 5, Double.PositiveInfinity };
-            //BBState state = new BBState(matrix, new List<int>() { 0 }, new List<int>() { 1, 2, 3 }, 0);
+            //insertion operation is O(logn)
             states.Add(state);
             int count = 0;
+            //while there are still states in the queue and the time hasn't reached 60 seconds, continue branching
+            //insertion operation is O(logn)
             while (states.Count > 0 && timer.ElapsedMilliseconds < 60000)
             {
                 state = states.Min;
+                //deletion operation is O(logn)
                 states.Remove(state);
+                //create children states from the remaining cities left to visit, return true if there are no children to extend
                 bool done = state.extend(states, bssf);
                 BBState.maxStateCount = BBState.maxStateCount < states.Count ? states.Count : BBState.maxStateCount;
                 if (done)
                 {
+                    //update the bssf if the state cost is less than the current.
                     if (state.cost < bssf)
                     {
                         bssf = state.cost;
                         count++;
+                        //remove states from queue if they are more than the bssf O(kn)
                         List<BBState> removable = new List<BBState>();
                         foreach(BBState st in states)
                         {
@@ -460,7 +469,7 @@ namespace TSP
 
             timer.Stop();
             Route = new ArrayList();
-            foreach(int index in state.getPath())
+            foreach(int index in state.path)
             {
                 Route.Add(Cities[index]);
             }
@@ -468,7 +477,8 @@ namespace TSP
             results[COST] = String.Format("{0}",bssf);    // load results into array here, replacing these dummy values
             results[TIME] = String.Format("{0}",timer.ElapsedMilliseconds/1000.00);
             results[COUNT] = String.Format("{0}",count);
-
+            file.WriteLine(String.Format("{0},{1},{2},{3},{4},{5},{6},{7}", Cities.Length, Seed, timer.ElapsedMilliseconds / 1000.00, bssf, BBState.maxStateCount, count, BBState.generatedCount, BBState.prunedCount));
+            file.Close();
             return results;
         }
 
@@ -507,17 +517,18 @@ namespace TSP
         }
         #endregion
     }
+    //simple IComparer to order the priority in the SortedSet to work as a priority queue O(1)
     public class BBStateComparer : IComparer<BBState>
     {
         public int Compare(BBState x, BBState y)
         {
-            if (x.Equals(y))
-            {
-                return 0;
-            }
-            else if (x.getCost() > y.getCost())
+            if (x.cost > y.cost)
             {
                 return 1;
+            }
+            else if (x.Equals(y))
+            {
+                return 0;
             }
             return -1;
         }

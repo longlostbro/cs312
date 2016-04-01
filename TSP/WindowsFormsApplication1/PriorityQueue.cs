@@ -41,7 +41,7 @@ namespace TSP
         public void insert(BBState state)
         {
             states.Add(state);
-            double cost = state.getCost();
+            double cost = state.cost;
             this.cost.Insert(++lastIndex,cost);
             pointers.Add(pointers.Count);
             if (cost != Int32.MaxValue)
@@ -139,7 +139,7 @@ namespace TSP
         {
             for (int i = 0; i < pointers.Count; i++)
             {
-                if(states.ElementAt(pointers.ElementAt(i)).getCost() > bssf)
+                if(states.ElementAt(pointers.ElementAt(i)).cost > bssf)
                 {
                     int node = pointers[i];
                     pointers[i] = pointers[lastIndex];

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TSP
 {
-
+    //this class is used to represent a branch and bound tsp state
     public class BBState
     {
         public List<int> citiesLeft;
@@ -21,10 +21,11 @@ namespace TSP
         {
             this.path = path;
             this.matrix = matrix;
+            //set cost to the initial cost plus the reduction costs for both row and column reduction
             this.cost = initialCost + reduce();
             this.citiesLeft = citiesLeft;
         }
-
+        //iterates through the rows and columns to reduce and returns the reduction cost
         public double reduce()
         {
             double rowReductionCost = 0;
@@ -64,11 +65,7 @@ namespace TSP
             return rowReductionCost + columnReductionCost;
         }
 
-        public double getCost()
-        {
-            return cost;
-        }
-
+        //This method generates children states for the remaining cities left and adds each to the queue if its cost is < bssf
         public bool extend(SortedSet<BBState> states, double bssf)
         {
             if (citiesLeft.Count() != 0)
@@ -106,12 +103,7 @@ namespace TSP
                 return true;
             }
         }
-        
-        public List<int> getPath()
-        {
-            return path;
-        }
-
+        //simple equals operator
         public override bool Equals(System.Object obj)
         {
             // If parameter is null return false.
