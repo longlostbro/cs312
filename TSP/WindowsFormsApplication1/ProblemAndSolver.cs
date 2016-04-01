@@ -375,7 +375,6 @@ namespace TSP
         /// stops when time limit expires and uses BSSF as solution
         /// </summary>
         /// <returns>results array for GUI that contains three ints: cost of solution, time spent to find solution, number of solutions found during search (not counting initial BSSF estimate)</returns>
-
         public string[] bBSolveProblem()
         {
             StreamWriter file = new StreamWriter("report.csv",true);
@@ -385,7 +384,7 @@ namespace TSP
             timer.Start();
 
             //data structure used as priority queue with IComparer for the priority sort
-            SortedSet<BBState> states = new SortedSet<BBState>(new BBStateComparer());
+            BBState.states.Clear();
             double max = 0;
             double secondMax = 0;
             List<double> maxes = new List<double>();
@@ -427,45 +426,45 @@ namespace TSP
             //take the average of each set of two maxes and multiply it by two for the bssf, produces results in 3/4-1/2 the time reduction
             result = result / matrix.Length * 2;
             //set the initial bssf
-            double bssf = result;
+            BBState.bssf = result;
             //Initial state created O(n^2) because it calls reduce
             BBState state = new BBState(matrix, new List<int>() { 0 }, citiesLeft, 0);
             //insertion operation is O(logn)
-            states.Add(state);
+            BBState.states.Add(state);
             int count = 0;
             //while there are still states in the queue and the time hasn't reached 60 seconds, continue branching
             //insertion operation is O(logn)
-            while (states.Count > 0 && timer.ElapsedMilliseconds < 60000)
+            while (BBState.states.Count > 0 && timer.ElapsedMilliseconds < 60000)
             {
-                state = states.Min;
+                state = BBState.states.Min;
                 //deletion operation is O(logn)
-                states.Remove(state);
+                BBState.states.Remove(state);
                 //create children states from the remaining cities left to visit, return true if there are no children to extend
-                bool done = state.extend(states, bssf);
-                BBState.maxStateCount = BBState.maxStateCount < states.Count ? states.Count : BBState.maxStateCount;
+                bool done = state.extend();
+                BBState.maxStateCount = BBState.maxStateCount < BBState.states.Count ? BBState.states.Count : BBState.maxStateCount;
                 if (done)
                 {
                     //update the bssf if the state cost is less than the current.
-                    if (state.cost < bssf)
+                    if (state.cost < BBState.bssf)
                     {
-                        bssf = state.cost;
+                        BBState.bssf = state.cost;
                         count++;
                         //remove states from queue if they are more than the bssf O(kn)
                         List<BBState> removable = new List<BBState>();
-                        foreach(BBState st in states)
+                        foreach(BBState st in BBState.states)
                         {
-                            if (st.cost >= bssf)
+                            if (st.cost >= BBState.bssf)
                                 removable.Add(st);
                         }
                         foreach(BBState st in removable)
                         {
-                            states.Remove(st);
+                            BBState.states.Remove(st);
                             BBState.prunedCount++;
                         }
                     }
                 }
             }
-            BBState.generatedCount += states.Count;
+            BBState.generatedCount += BBState.states.Count;
 
             timer.Stop();
             Route = new ArrayList();

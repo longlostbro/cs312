@@ -16,6 +16,8 @@ namespace TSP
         public static int prunedCount=0;
         public static int generatedCount=0;
         public static int maxStateCount = 0;
+        public static SortedSet<BBState> states = new SortedSet<BBState>(new BBStateComparer());
+        public static double bssf;
 
         public BBState(double[][] matrix, List<int> path, List<int> citiesLeft, double initialCost)
         {
@@ -25,7 +27,7 @@ namespace TSP
             this.cost = initialCost + reduce();
             this.citiesLeft = citiesLeft;
         }
-        //iterates through the rows and columns to reduce and returns the reduction cost
+        //iterates through the rows and columns to reduce and returns the reduction cost O(logn^2) because as more reductions are performed there are less to do.
         public double reduce()
         {
             double rowReductionCost = 0;
@@ -65,8 +67,8 @@ namespace TSP
             return rowReductionCost + columnReductionCost;
         }
 
-        //This method generates children states for the remaining cities left and adds each to the queue if its cost is < bssf
-        public bool extend(SortedSet<BBState> states, double bssf)
+        //This method generates children states for the remaining cities left and adds each to the queue if its cost is < bssf O(logn^2) because cities left starts at n^2 and becomes less as we go further down in both breadth and depth
+        public bool extend()
         {
             if (citiesLeft.Count() != 0)
             {
