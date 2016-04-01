@@ -87,7 +87,14 @@ namespace TSP
                         List<int> newCitiesLeft = citiesLeft.Select(a => a).ToList();
                         newCitiesLeft.Remove(i);
                         BBState state = new BBState(newMatrix, newPath, newCitiesLeft, initialCost);
-                        states.Add(state);
+                        if(state.cost > bssf)
+                        {
+                            prunedCount++;
+                        }
+                        else
+                        {
+                            states.Add(state);
+                        }
                     }
                     else
                     {
