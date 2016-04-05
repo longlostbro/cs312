@@ -473,7 +473,7 @@ namespace TSP
                 Route.Add(Cities[index]);
             }
             this.bssf= new TSPSolution(Route);
-            results[COST] = String.Format("{0}",bssf);    // load results into array here, replacing these dummy values
+            results[COST] = String.Format("{0}",BBState.bssf);    // load results into array here, replacing these dummy values
             results[TIME] = String.Format("{0}",timer.ElapsedMilliseconds/1000.00);
             results[COUNT] = String.Format("{0}",count);
             file.WriteLine(String.Format("{0},{1},{2},{3},{4},{5},{6},{7}", Cities.Length, Seed, timer.ElapsedMilliseconds / 1000.00, bssf, BBState.maxStateCount, count, BBState.generatedCount, BBState.prunedCount));
@@ -492,14 +492,63 @@ namespace TSP
         public string[] greedySolveProblem()
         {
             string[] results = new string[3];
+            map = new Dictionary<City, List<City>>();
+            foreach(City city in Cities)
+            {
+                List<City> path = new List<City>() { city };
+                map.Add(city, path);
+                findShortestPath(city, path);
+                path.Add(city);
+            }
+            KeyValuePair<List<City>,double> bestPath = new KeyValuePair<List<City>, double>(null,Double.PositiveInfinity);
+            foreach(City city in map.Keys)
+            {
+                List<City> path;
+                map.TryGetValue(city, out path);
+                double cost = 0;
+                foreach(City toCity in path)
+                {
+                    cost += city.costToGetTo(toCity);
+                }
+                if(cost < bestPath.Value)
+                {
+                    bestPath = new KeyValuePair<List<City>, double>(path, cost);
+                }
+            }
 
             // TODO: Add your implementation for a greedy solver here.
-
-            results[COST] = "not implemented";    // load results into array here, replacing these dummy values
+            Route = new ArrayList();
+            foreach (City city in bestPath.Key)
+            {
+                Route.Add(city);
+            }
+            this.bssf = new TSPSolution(Route);
+            results[COST] = String.Format("{0}", bestPath.Value); ;    // load results into array here, replacing these dummy values
             results[TIME] = "-1";
             results[COUNT] = "-1";
 
             return results;
+        }
+        Dictionary<City, List<City>> map;
+        private void findShortestPath(City city, List<City> path)
+        {
+            double bestCost = Double.PositiveInfinity;
+            City bestCity = null;
+            for (int i = 0; i < Cities.Length; i++)
+            {
+                if (!path.Contains(Cities[i]))
+                {
+                    double cost = city.costToGetTo(Cities[i]);
+                    if(cost < bestCost)
+                    {
+                        bestCost = cost;
+                        bestCity = Cities[i];
+                    }
+                }
+            }
+            path.Add(bestCity);
+            if(path.Count < Cities.Length)
+                findShortestPath(bestCity, path);
         }
 
         public string[] fancySolveProblem()
