@@ -492,31 +492,40 @@ namespace TSP
         public string[] greedySolveProblem()
         {
             string[] results = new string[3];
+            Stopwatch timer = new Stopwatch();
+            timer.Start();
+            //initialization
+            double count = Double.PositiveInfinity;
             map = new Dictionary<City, List<City>>();
+            //Find greedy path starting from each city O(n^2)
             foreach(City city in Cities)
             {
                 List<City> path = new List<City>() { city };
                 map.Add(city, path);
+                //find shortest for individual city
                 findShortestPath(city, path);
                 path.Add(city);
             }
+            //Calculate Costs of path results O(n^2)
             KeyValuePair<List<City>,double> bestPath = new KeyValuePair<List<City>, double>(null,Double.PositiveInfinity);
             foreach(City city in map.Keys)
             {
                 List<City> path;
                 map.TryGetValue(city, out path);
                 double cost = 0;
+                //check each edge excluding cities visited and current city
                 foreach(City toCity in path)
                 {
                     cost += city.costToGetTo(toCity);
                 }
                 if(cost < bestPath.Value)
                 {
+                    count++;
                     bestPath = new KeyValuePair<List<City>, double>(path, cost);
                 }
             }
+            timer.Stop();
 
-            // TODO: Add your implementation for a greedy solver here.
             Route = new ArrayList();
             foreach (City city in bestPath.Key)
             {
@@ -524,12 +533,13 @@ namespace TSP
             }
             this.bssf = new TSPSolution(Route);
             results[COST] = String.Format("{0}", bestPath.Value); ;    // load results into array here, replacing these dummy values
-            results[TIME] = "-1";
-            results[COUNT] = "-1";
+            results[TIME] = String.Format("{0}",timer.ElapsedMilliseconds/1000.00);
+            results[COUNT] = String.Format("{0}",count);
 
             return results;
         }
         Dictionary<City, List<City>> map;
+        //find the edge with the least cost for cities not yet visited O(n)
         private void findShortestPath(City city, List<City> path)
         {
             double bestCost = Double.PositiveInfinity;
