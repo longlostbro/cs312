@@ -497,28 +497,18 @@ namespace TSP
             //initialization
             double count = Double.PositiveInfinity;
             map = new Dictionary<City, List<City>>();
+            KeyValuePair<List<City>, double> bestPath = new KeyValuePair<List<City>, double>(null, Double.PositiveInfinity);
             //Find greedy path starting from each city O(n^2)
-            foreach(City city in Cities)
+            foreach (City city in Cities)
             {
                 List<City> path = new List<City>() { city };
                 map.Add(city, path);
                 //find shortest for individual city
-                findShortestPath(city, path);
+                double cost = findShortestPath(city, path);
                 path.Add(city);
-            }
-            //Calculate Costs of path results O(n^2)
-            KeyValuePair<List<City>,double> bestPath = new KeyValuePair<List<City>, double>(null,Double.PositiveInfinity);
-            foreach(City city in map.Keys)
-            {
-                List<City> path;
-                map.TryGetValue(city, out path);
-                double cost = 0;
-                //check each edge excluding cities visited and current city
-                foreach(City toCity in path)
-                {
-                    cost += city.costToGetTo(toCity);
-                }
-                if(cost < bestPath.Value)
+                cost += path[path.Count-2].costToGetTo(city);
+                //Calculate Costs of path results check each edge excluding cities visited and current city
+                if (cost < bestPath.Value)
                 {
                     count++;
                     bestPath = new KeyValuePair<List<City>, double>(path, cost);
@@ -540,7 +530,7 @@ namespace TSP
         }
         Dictionary<City, List<City>> map;
         //find the edge with the least cost for cities not yet visited O(n)
-        private void findShortestPath(City city, List<City> path)
+        private double findShortestPath(City city, List<City> path)
         {
             double bestCost = Double.PositiveInfinity;
             City bestCity = null;
@@ -558,7 +548,8 @@ namespace TSP
             }
             path.Add(bestCity);
             if(path.Count < Cities.Length)
-                findShortestPath(bestCity, path);
+                return bestCost + findShortestPath(bestCity, path);
+            return bestCost;
         }
 
         public string[] fancySolveProblem()
